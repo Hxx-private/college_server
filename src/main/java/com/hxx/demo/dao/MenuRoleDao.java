@@ -2,6 +2,7 @@ package com.hxx.demo.dao;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -9,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
  * @author sang
  * @date 2018/1/2
  */
+@Mapper
 public interface MenuRoleDao {
     @Delete("DELETE FROM menu_role WHERE rid=#{rid}")
     int deleteMenuByRid(@Param("rid") Long rid);

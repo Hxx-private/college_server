@@ -50,7 +50,7 @@ public class UserController {
     @PostMapping(value = "/user/register")
     public Map<String, Object> register(@RequestBody User user) throws Exception {
         //获取用户名
-        user.setUserName(user.getUserName());
+        user.setUserName(user.getUsername());
         //对密码进行加密传输
         user.setPassword(AESUtils.AESEncrypt(user.getPassword(), KEY));
         //获取注册时间
@@ -58,7 +58,7 @@ public class UserController {
         //获取用户类型
         user.setType(user.getType());
         //用户名唯一
-        if (userService.findByUsername(user.getUserName()) != null) {
+        if (userService.findByUsername(user.getUsername()) != null) {
             return Result.failMap("用户名已经存在,请重新输入");
         } else {
             userService.addUser(user);
@@ -82,13 +82,13 @@ public class UserController {
     @GetMapping(value = "/user/login")
     public Map<String, Object> login(@RequestBody User user, HttpServletResponse response, HttpSession session, HttpServletRequest request) throws Exception {
         String pwd = AESUtils.AESEncrypt(user.getPassword(), KEY);
-        if (null == userService.findByUsername(user.getUserName())) {
+        if (null == userService.findByUsername(user.getUsername())) {
             return Result.failMap("用户不存在,请先去注册");
         }
-        if (!userService.findByUsername(user.getUserName()).getType().equals(user.getType())) {
+        if (!userService.findByUsername(user.getUsername()).getType().equals(user.getType())) {
             return Result.failMap("请选择正确的登录类型");
         }
-        if (userService.findByUsername(user.getUserName()).getType().equals(user.getType()) && userService.findByUsername(user.getUserName()).getPassword().equals(pwd)) {
+        if (userService.findByUsername(user.getUsername()).getType().equals(user.getType()) && userService.findByUsername(user.getUsername()).getPassword().equals(pwd)) {
             session.setAttribute("user", user);
             request.getSession().setAttribute("user", user);
             return tokenService.getToken(user);
@@ -115,7 +115,7 @@ public class UserController {
         //对新密码进行加密传输
         String newPwd = AESUtils.AESEncrypt(user.getPwdNew(), KEY);
         //判断当前用户输入的旧密码是否与数据库中该用户的密码一致
-        if (Objects.equals(AESUtils.AESEncrypt(user.getPassword(), KEY), userService.findByUsername(user.getUserName()).getPassword())) {
+        if (Objects.equals(AESUtils.AESEncrypt(user.getPassword(), KEY), userService.findByUsername(user.getUsername()).getPassword())) {
             user.setPwdNew(newPwd);
             userService.changePwd(user);
             return Result.successMap("密码修改成功");
@@ -172,8 +172,8 @@ public class UserController {
     })
     @PutMapping(value = "/user/alterUser")
     public Map<String, Object> alterUser(@RequestBody User user) {
-        if (userService.showSelfInfo(user.getUserName()).getUserName().equals(user.getUserName())) {
-            if (userService.findByUsername(user.getUserName()).getUserName().equals(user.getUserName())) {
+        if (userService.showSelfInfo(user.getUsername()).getUsername().equals(user.getUsername())) {
+            if (userService.findByUsername(user.getUsername()).getUsername().equals(user.getUsername())) {
                 return Result.failMap("用户名已存在,请重新输入");
             }
             userService.alterUser(user);

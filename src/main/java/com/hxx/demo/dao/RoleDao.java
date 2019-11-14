@@ -1,10 +1,7 @@
 package com.hxx.demo.dao;
 
 import com.hxx.demo.entity.Role;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 /**
@@ -14,6 +11,7 @@ import java.util.List;
  * @Param
  * @return
  **/
+@Mapper
 public interface RoleDao {
     @Select(" SELECT * FROM role where id!=6")
     List<Role> roles();

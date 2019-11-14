@@ -112,7 +112,7 @@ public class AdminController {
         user.setPassword(AESUtils.AESEncrypt(user.getPassword(), KEY));
         //设置添加时间
         user.setRegisterTime(DateUtils.getSysTime());
-        if (null != userService.findByUsername(user.getUserName())) {
+        if (null != userService.findByUsername(user.getUsername())) {
             return Result.failMap("用户名已经存在,请重新输入");
         }
         userService.createUser(user);
