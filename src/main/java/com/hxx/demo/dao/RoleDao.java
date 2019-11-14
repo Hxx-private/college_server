@@ -7,10 +7,13 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
-
 /**
- * Created by sang on 2018/1/1.
- */
+ * @Author Hxx
+ * @Description //TODO
+ * @Date 11:01 2019/11/14
+ * @Param
+ * @return
+ **/
 public interface RoleDao {
     @Select(" SELECT * FROM role where id!=6")
     List<Role> roles();
