@@ -1,6 +1,7 @@
 package com.hxx.demo.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hxx.demo.entity.RespBean;
 import com.hxx.demo.entity.Result;
 import com.hxx.demo.service.UserService;
 import com.hxx.demo.utils.UserUtils;
@@ -58,10 +59,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .and()
                 .formLogin().loginPage("/login_p").loginProcessingUrl("/login")
-                .usernameParameter("username").passwordParameter("password")
+                .usernameParameter("userName").passwordParameter("password")
                 .failureHandler((req, resp, e) -> {
                     resp.setContentType("application/json;charset=utf-8");
-                    Result fail = null;
+                    Result fail;
                     if (e instanceof BadCredentialsException ||
                             e instanceof UsernameNotFoundException) {
                         fail = Result.fail("账户名或者密码输入错误!");
@@ -85,10 +86,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .successHandler((req, resp, auth) -> {
                     resp.setContentType("application/json;charset=utf-8");
-                    Result result = Result.success(UserUtils.getCurrentUser());
+                    RespBean respBean = RespBean.ok("登录成功!", UserUtils.getCurrentUser());
                     ObjectMapper om = new ObjectMapper();
                     PrintWriter out = resp.getWriter();
-                    out.write(om.writeValueAsString(result));
+                    out.write(om.writeValueAsString(respBean));
                     out.flush();
                     out.close();
                 })
@@ -98,10 +99,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/logout")
                 .logoutSuccessHandler((req, resp, authentication) -> {
                     resp.setContentType("application/json;charset=utf-8");
-                    Result respBean = Result.success("注销成功!");
+                    Result result = Result.success("注销成功!");
                     ObjectMapper om = new ObjectMapper();
                     PrintWriter out = resp.getWriter();
-                    out.write(om.writeValueAsString(respBean));
+                    out.write(om.writeValueAsString(result));
                     out.flush();
                     out.close();
                 })

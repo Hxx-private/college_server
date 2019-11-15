@@ -138,5 +138,9 @@ public interface UserDao {
     void delByNumber(@Param("number") String number);
 
     @Select("SELECT * FROM user WHERE user_name=#{userName}")
+   //@Select("SELECT r.*,u.* FROM user_role ur,role r ,user u where ur.rid=r.id AND ur.user_id=#{userId} AND user_name=#{userName}")
     User loadUserByUsername(@Param("userName") String userName);
+
+
+
 }

@@ -21,7 +21,7 @@ import java.util.List;
  * @date 2017/12/28
  */
 @Component
-public class CustomMetadataSource implements FilterInvocationSecurityMetadataSource {
+public class  CustomMetadataSource implements FilterInvocationSecurityMetadataSource {
     @Autowired
     private MenuService menuService;
     AntPathMatcher antPathMatcher = new AntPathMatcher();
