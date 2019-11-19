@@ -1,7 +1,6 @@
 package com.hxx.demo.controller;
 
 import com.github.pagehelper.PageHelper;
-import com.hxx.demo.annotation.UserLoginToken;
 import com.hxx.demo.entity.Result;
 import com.hxx.demo.entity.Sanitary;
 import com.hxx.demo.service.SanitaryService;

@@ -1,13 +1,14 @@
 package com.hxx.demo.service;
 
-import com.hxx.demo.dao.MenuDao;
 import com.hxx.demo.entity.Menu;
+import com.hxx.demo.mapper.MenuMapper;
 import com.hxx.demo.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -18,20 +19,22 @@ import java.util.List;
 @CacheConfig(cacheNames = "menus_cache")
 public class MenuService {
     @Autowired
-    private MenuDao menuDao;
+    private MenuMapper menuMapper;
+
+
     public List<Menu> getAllMenu(){
-        return menuDao.getAllMenu();
+        return menuMapper.getAllMenu();
     }
 
     public List<Menu> getMenusByUserId() {
-        return menuDao.getMenusByUserId(UserUtils.getCurrentUser().getUserId());
+        return menuMapper.getMenusByUserId(UserUtils.getCurrentUser().getId());
     }
 
     public List<Menu> menuTree() {
-        return menuDao.menuTree();
+        return menuMapper.menuTree();
     }
 
     public List<Long> getMenusByRid(Long rid) {
-        return menuDao.getMenusByRid(rid);
+        return menuMapper.getMenusByRid(rid);
     }
 }

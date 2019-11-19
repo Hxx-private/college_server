@@ -154,6 +154,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         User user = userDao.loadUserByUsername(userName);
+        System.out.println(user);
         if (user == null) {
             throw new UsernameNotFoundException("用户名不对");
         }

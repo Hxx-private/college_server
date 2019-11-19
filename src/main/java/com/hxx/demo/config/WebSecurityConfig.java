@@ -62,25 +62,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .usernameParameter("userName").passwordParameter("password")
                 .failureHandler((req, resp, e) -> {
                     resp.setContentType("application/json;charset=utf-8");
-                    Result fail;
+                    RespBean respBean;
                     if (e instanceof BadCredentialsException ||
                             e instanceof UsernameNotFoundException) {
-                        fail = Result.fail("账户名或者密码输入错误!");
+                        respBean = RespBean.error("账户名或者密码输入错误!");
                     } else if (e instanceof LockedException) {
-                        fail = Result.fail("账户被锁定，请联系管理员!");
+                        respBean = RespBean.error("账户被锁定，请联系管理员!");
                     } else if (e instanceof CredentialsExpiredException) {
-                        fail = Result.fail("密码过期，请联系管理员!");
+                        respBean = RespBean.error("密码过期，请联系管理员!");
                     } else if (e instanceof AccountExpiredException) {
-                        fail = Result.fail("账户过期，请联系管理员!");
+                        respBean = RespBean.error("账户过期，请联系管理员!");
                     } else if (e instanceof DisabledException) {
-                        fail = Result.fail("账户被禁用，请联系管理员!");
+                        respBean = RespBean.error("账户被禁用，请联系管理员!");
                     } else {
-                        fail = Result.fail("登录失败!");
+                        respBean = RespBean.error("登录失败!");
                     }
                     resp.setStatus(401);
                     ObjectMapper om = new ObjectMapper();
                     PrintWriter out = resp.getWriter();
-                    out.write(om.writeValueAsString(fail));
+                    out.write(om.writeValueAsString(respBean));
                     out.flush();
                     out.close();
                 })
@@ -99,10 +99,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/logout")
                 .logoutSuccessHandler((req, resp, authentication) -> {
                     resp.setContentType("application/json;charset=utf-8");
-                    Result result = Result.success("注销成功!");
+                    RespBean respBean = RespBean.ok("注销成功!");
                     ObjectMapper om = new ObjectMapper();
                     PrintWriter out = resp.getWriter();
-                    out.write(om.writeValueAsString(result));
+                    out.write(om.writeValueAsString(respBean));
                     out.flush();
                     out.close();
                 })

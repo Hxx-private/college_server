@@ -1,7 +1,9 @@
 package com.hxx.demo.dao;
 
+import com.hxx.demo.entity.Role;
 import com.hxx.demo.entity.User;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.Map;
  * @author Hxx
  */
 @Mapper
+@Repository
 public interface UserDao {
 
     /**
@@ -137,10 +140,15 @@ public interface UserDao {
     @Delete("delete  from user where number= #{number}")
     void delByNumber(@Param("number") String number);
 
-    @Select("SELECT * FROM user WHERE user_name=#{userName}")
-   //@Select("SELECT r.*,u.* FROM user_role ur,role r ,user u where ur.rid=r.id AND ur.user_id=#{userId} AND user_name=#{userName}")
-    User loadUserByUsername(@Param("userName") String userName);
+    @Select("SELECT r.* FROM user_role ur,role r where ur.rid=r.id AND ur.userid=#{id}")
+    List<Role> getRolesByUserId(Long id);
 
+    @Select("SELECT * FROM user WHERE user_name=#{userName}")
+    @Results({
+            @Result(id = true, column = "id", property = "id"),//获取自增id  (必须设置id为true)
+            @Result(property = "roles",column = "id", many = @Many(select = "com.hxx.demo.dao.UserDao.getRolesByUserId"))
+    })
+    User loadUserByUsername(@Param("userName") String userName);
 
 
 }

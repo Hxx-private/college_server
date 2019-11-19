@@ -1,7 +1,6 @@
 package com.hxx.demo.controller;
 
 import com.github.pagehelper.PageHelper;
-import com.hxx.demo.annotation.UserLoginToken;
 import com.hxx.demo.entity.Result;
 import com.hxx.demo.entity.User;
 import com.hxx.demo.service.UserService;
@@ -76,7 +75,7 @@ public class AdminController {
             @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     }
     )
-    @GetMapping("user/findAllUser")
+    @GetMapping("user/list")
     public Map<String, Object> findAllUser( Integer pageNum, Integer pageSize) {
         if (userService.findAll().isEmpty()) {
             return Result.failMap("用户信息为空");

@@ -2,6 +2,7 @@ package com.hxx.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.apache.ibatis.annotations.Property;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @Data
 public class User implements UserDetails {
-    private Long userId;
+    private Long id;
     private String userName;
     private String password;
     private String pwdNew;
@@ -77,6 +78,8 @@ public class User implements UserDetails {
         }
         return authorities;
     }
+
+
 }
 
 

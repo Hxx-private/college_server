@@ -23,6 +23,7 @@ public class ConfigController {
     @GetMapping("/sysmenu")
     public List<Menu> sysmenu() {
         return menuService.getMenusByUserId();
+
     }
 
     @GetMapping("/user")

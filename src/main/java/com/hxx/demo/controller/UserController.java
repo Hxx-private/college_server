@@ -1,6 +1,5 @@
 package com.hxx.demo.controller;
 
-import com.hxx.demo.annotation.UserLoginToken;
 import com.hxx.demo.entity.Result;
 import com.hxx.demo.entity.User;
 import com.hxx.demo.service.TokenService;
@@ -103,7 +102,6 @@ public class UserController {
      * @Date 10:08 2019/10/29
      * @Param [user]
      **/
-    @UserLoginToken
     @ApiOperation(value = "修改密码", notes = "用户登录之后才可以修改密码")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "password", value = "原密码", required = true, dataType = "String"),
@@ -131,7 +129,6 @@ public class UserController {
      * @Date 10:12 2019/10/31
      * @Param [userName]
      **/
-    @UserLoginToken
     @ApiOperation(value = "显示个人信息", notes = "显示信息如下")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String"),
@@ -160,7 +157,6 @@ public class UserController {
      * @Date 16:49 2019/10/30
      * @Param [user]
      **/
-    @UserLoginToken
     @ApiOperation(value = "用户修改资料", notes = "用户登录之后才可以修改资料")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String"),
