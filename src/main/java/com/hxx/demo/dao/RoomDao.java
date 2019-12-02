@@ -1,7 +1,6 @@
 package com.hxx.demo.dao;
 
 
-import com.github.pagehelper.ISelect;
 import com.hxx.demo.entity.Room;
 import org.apache.ibatis.annotations.*;
 
@@ -11,7 +10,7 @@ import java.util.List;
  * @author Hxx
  */
 @Mapper
-public interface RoomDao {
+public interface RoomDao{
     /**
      * @return void
      * @Author Hxx

@@ -27,7 +27,7 @@ import java.util.Map;
 @Api(value = "LostController")
 @RestController
 @RequestMapping("/api")
-public class LostController {
+public class LostController{
     @Autowired
     private LostService lostService;
 
@@ -43,12 +43,12 @@ public class LostController {
     public Map<String, Object> addLost(@RequestBody Lost lost) {
         lost.setId(IdUtils.getNumberForPK());
         lost.setCreateTime(DateUtils.getSysTime());
-        lostService.insertLost(lost);
-        if (!lostService.getLostByCreater(lost.getId()).isEmpty()) {
-            return Result.successMap(lost);
+        int i = lostService.insertLost(lost);
+        if (i==1) {
+            return Result.successMap("发布成功");
         }
 
-        return Result.failMap("创建失败");
+        return Result.failMap("发布失败");
     }
 
     /**
@@ -60,7 +60,7 @@ public class LostController {
      **/
     @ApiOperation(value = "查询所有丢失物品信息")
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1",   dataType = "Integer"),
+            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     }
     )
@@ -83,8 +83,8 @@ public class LostController {
     @ApiOperation(value = "根据创建者查询所有失物信息", notes = "根据creater创建者查询他所发布过的失物信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "creater", value = "创建者", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1",  dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数",  dataType = "Integer")
+            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     })
     @GetMapping("/findLostByCreater/{creater}")
     public Map<String, Object> findLostByCreater(@PathVariable("creater") String creater, Integer pageNum, Integer pageSize) {
@@ -104,8 +104,8 @@ public class LostController {
      **/
     @ApiOperation(value = "查询当天所有丢失信息")
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1",  dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数",  dataType = "Integer")
+            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     }
     )
     @GetMapping("/getTodayAllLost")
@@ -128,8 +128,8 @@ public class LostController {
     @ApiOperation(value = "根据指定时间段查询丢失信息", notes = "传入两个参数starttime,endtime")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "periodTime", value = "时间对象", required = true, dataType = "PeriodTime"),
-            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1",   dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数",  dataType = "Integer")
+            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     }
     )
     @GetMapping("/getLostByPeriod")
@@ -151,7 +151,7 @@ public class LostController {
      * @Param [roomId]
      **/
     @ApiOperation("根据发布人来删除帖子")
-    @ApiImplicitParam(name = "creater",value = "创建人",required = true, dataType = "String")
+    @ApiImplicitParam(name = "creater", value = "创建人", required = true, dataType = "String")
     @DeleteMapping("/sanitary/delBycreater/{creater}")
     public Map<String, Object> delBycreater(@PathVariable("creater") String creater) {
         lostService.delBycreater(creater);
@@ -169,7 +169,7 @@ public class LostController {
      * @Param [checkTime]
      **/
     @ApiOperation("根据发布时间来删除帖子")
-    @ApiImplicitParam(name = "createTime",value = "发布人",required = true, dataType = "String")
+    @ApiImplicitParam(name = "createTime", value = "发布人", required = true, dataType = "String")
     @DeleteMapping("/sanitary/delBycreateTime/{createTime}")
     public Map<String, Object> delBycreateTime(@PathVariable("createTime") String createTime) {
         lostService.delBycreateTime(createTime);

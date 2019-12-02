@@ -6,6 +6,7 @@ import com.hxx.demo.entity.Sanitary;
 import com.hxx.demo.service.SanitaryService;
 import com.hxx.demo.utils.DateUtils;
 import com.hxx.demo.utils.IdUtils;
+import com.hxx.demo.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -23,8 +24,7 @@ import java.util.Map;
 
 @Api(value = "SanitaryController")
 @RestController
-@RequestMapping("/api")
-public class SanitaryController {
+public class SanitaryController{
     @Autowired
     SanitaryService sanitaryService;
 
@@ -45,6 +45,7 @@ public class SanitaryController {
     public Map<String, Object> sanitaryAdd(@RequestBody Sanitary sanitary) {
         sanitary.setCheckTime(DateUtils.getSysTime());
         sanitary.setId(IdUtils.getNumberForPK());
+        sanitary.setUName(UserUtils.getCurrentUser().getName());
         sanitaryService.addSanitary(sanitary);
         if (!sanitaryService.findById(sanitary.getId()).isEmpty()) {
 

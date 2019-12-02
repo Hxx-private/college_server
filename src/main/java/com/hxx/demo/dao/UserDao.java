@@ -22,8 +22,8 @@ public interface UserDao {
      * @Date 15:20 2019/10/28
      * @Param [user]
      **/
-    @Insert("INSERT INTO user (user_name,password,register_time,type) VALUES (#{user.userName},#{user.password},#{user.registerTime},#{user.type})")
-    void addUser(@Param("user") User user);
+    @Insert(" INSERT INTO user set userName=#{userName},password=#{password}")
+    int userReg(@Param("userName") String userName, @Param("password") String password);
 
     //void updateActiveId(Map<String, Object> updateIdMap);
 
@@ -34,7 +34,7 @@ public interface UserDao {
      * @Date 15:18 2019/10/28
      * @Param [userName, password]
      **/
-    @Select("SELECT * FROM user WHERE user_name = #{userName} AND password = #{password}")
+    @Select("SELECT * FROM user WHERE userName = #{userName} AND password = #{password}")
     User login(@Param("userName") String userName, @Param("password") String password);
 
     /**
@@ -45,7 +45,7 @@ public interface UserDao {
      * @Param [user]
      **/
 
-    @Update("UPDATE user SET password=#{user.pwdNew} WHERE user_name=#{user.userName}")
+    @Update("UPDATE user SET password=#{user.pwdNew} WHERE userName=#{user.userName}")
     void changePwd(@Param("user") User user);
 
     /**
@@ -55,7 +55,7 @@ public interface UserDao {
      * @Date 15:10 2019/10/28
      * @Param [userName]
      **/
-    @Select("SELECT * FROM user WHERE user_name LIKE '%${userName}%' ")
+    @Select("SELECT * FROM user WHERE userName LIKE '%${userName}%' ")
     User findByUserName(@Param("userName") String userName);
 
     /**
@@ -65,7 +65,7 @@ public interface UserDao {
      * @Date 9:41 2019/10/29
      * @Param [user]
      **/
-    @Update("UPDATE user SET user_name=#{user.userName},sex=#{user.sex},age=#{user.age},tel=#{user.tel},img_url=#{imgUrl} WHERE user_name=#{user.userName}")
+    @Update("UPDATE user SET userName=#{user.userName},sex=#{user.sex},age=#{user.age},tel=#{user.tel} WHERE userName=#{user.userName}")
     void alterUser(@Param("user") User user);
 
 
@@ -97,8 +97,8 @@ public interface UserDao {
      * @Date 15:10 2019/10/28
      * @Param [userName]
      **/
-    @Select("SELECT * FROM user WHERE name LIKE '%${name}%' ")
-    List<Map<String, Object>> findByName(@Param("name") String name);
+    @Select("SELECT * FROM user WHERE name=#{name}")
+    List<User> findByName(@Param("name") String name);
 
     /**
      * @return com.hxx.demo.entity.User
@@ -107,7 +107,7 @@ public interface UserDao {
      * @Date 10:02 2019/10/31
      * @Param [userName]
      **/
-    @Select("SELECT user_name,sex,age,number,depart,special,tel,register_time FROM user WHERE user_name  LIKE '%${userName}%' ")
+    @Select("SELECT userName,sex,age,number,depart,special,tel,registerTime FROM user WHERE userName  =#{userName}")
     User showSelfInfo(@Param("userName") String userName);
 
     /**
@@ -117,7 +117,7 @@ public interface UserDao {
      * @Date 11:01 2019/11/7
      * @Param [user]
      **/
-    @Insert("INSERT INTO user (user_name,name,password,sex,number,tel,type,register_time) VALUES (#{user.userName},#{user.name},#{user.password},#{user.sex},#{user.number},#{user.tel},#{user.type},#{user.registerTime})")
+    @Insert("INSERT INTO user (userName,name,password,sex,number,tel,type,registerTime) VALUES (#{user.userName},#{user.name},#{user.password},#{user.sex},#{user.number},#{user.tel},#{user.type},#{user.registerTime})")
     void createUser(@Param("user") User user);
 
     /**
@@ -127,7 +127,7 @@ public interface UserDao {
      * @Date 14:56 2019/11/7
      * @Param [user]
      **/
-    @Delete("delete  from user where userName LIKE '%${userName}%' ")
+    @Delete("DELETE FROM user WHERE userName =#{userName}")
     void delByUserName(@Param("userName") String userName);
 
     /**
@@ -143,12 +143,16 @@ public interface UserDao {
     @Select("SELECT r.* FROM user_role ur,role r where ur.rid=r.id AND ur.userid=#{id}")
     List<Role> getRolesByUserId(Long id);
 
-    @Select("SELECT * FROM user WHERE user_name=#{userName}")
+    @Select("SELECT * FROM user WHERE userName=#{userName}")
     @Results({
             @Result(id = true, column = "id", property = "id"),//获取自增id  (必须设置id为true)
-            @Result(property = "roles",column = "id", many = @Many(select = "com.hxx.demo.dao.UserDao.getRolesByUserId"))
+            @Result(property = "roles", column = "id", many = @Many(select = "com.hxx.demo.dao.UserDao.getRolesByUserId"))
     })
     User loadUserByUsername(@Param("userName") String userName);
 
+    @Select("SELECT COUNT(*) FROM user")
+    int total();
 
+    @Select("SELECT * FROM USER WHERE CONCAT_WS(`name`,special,depart,roomId,number,userName,sex) LIKE '%#{keywords}%'")
+    List<User>getKeyWords(@Param("keywords") String keywords);
 }

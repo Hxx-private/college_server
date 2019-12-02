@@ -4,6 +4,7 @@ import com.hxx.demo.dao.RoomDao;
 import com.hxx.demo.entity.Room;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * @author Hxx
  */
 @Service
+@Transactional
 public class RoomService {
     @Autowired
     private RoomDao roomDao;

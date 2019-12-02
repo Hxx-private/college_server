@@ -10,7 +10,7 @@ import java.util.List;
 public interface UserMapper {
     User loadUserByUsername(@Param("userName") String userName);
 
-    List<Role> getRolesByHrId(Long id);
+    List<Role> getRolesByUserId(Long id);
 
     int userReg(@Param("userName") String userName, @Param("password") String password);
 
@@ -20,11 +20,11 @@ public interface UserMapper {
 
     int deleteRoleByUserId(Long userId);
 
-    int addRolesForUser(@Param("userId") Long hrId, @Param("rids") Long[] rids);
+    int addRolesForUser(@Param("userId") Long userId, @Param("rids") Long[] rids);
 
-    User getUserById(Long hrId);
+    User getUserById(Long userId);
 
-    int deleteUser(Long hrId);
+    int deleteUser(Long userId);
 
     List<User> getAllUser(@Param("currentId") Long currentId);
 }

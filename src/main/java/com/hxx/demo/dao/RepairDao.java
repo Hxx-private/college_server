@@ -9,7 +9,7 @@ import java.util.List;
  * @author Hxx
  */
 @Mapper
-public interface RepairDao {
+public interface RepairDao{
     /**
      * @return com.hxx.demo.entity.Repair
      * @Author Hxx

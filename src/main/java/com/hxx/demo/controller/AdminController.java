@@ -1,10 +1,10 @@
 package com.hxx.demo.controller;
 
 import com.github.pagehelper.PageHelper;
+import com.hxx.demo.entity.RespBean;
 import com.hxx.demo.entity.Result;
 import com.hxx.demo.entity.User;
 import com.hxx.demo.service.UserService;
-import com.hxx.demo.utils.AESUtils;
 import com.hxx.demo.utils.DateUtils;
 import com.hxx.demo.utils.IdUtils;
 import io.swagger.annotations.Api;
@@ -12,8 +12,11 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,9 +24,9 @@ import java.util.Map;
  */
 @Api(value = "管理员事务控制层")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/user")
 public class AdminController {
-    private static final String KEY = "zhonghuan13xxxxx";
+    Map<String, Object> map = new HashMap<>();
     @Autowired
     private UserService userService;
 
@@ -38,11 +41,21 @@ public class AdminController {
     @ApiOperation(value = "根据学号或工号查找用户信息")
     @ApiImplicitParam(name = "number", value = "用户学号/工号", required = true, dataType = "String")
     @GetMapping(value = "/findNumber")
-    public Map<String, Object> finfByUserNumber(@RequestBody String number) {
+    public Map<String, Object> findByUserNumber(@RequestBody String number) {
         if (!userService.findByNumber(number).isEmpty()) {
             return Result.successMap(userService.findByNumber(number));
         }
         return Result.failMap("该用户不存在");
+    }
+    @GetMapping("/findByKeyWords")
+    public RespBean findByKeyWords(Integer pageNum,Integer pageSize,String keywords){
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> list = userService.getUsersByKeywords(keywords);
+        int total = userService.total();
+        map.put("data", list);
+        map.put("total", total);
+
+        return RespBean.ok("",map);
     }
 
     /**
@@ -55,11 +68,14 @@ public class AdminController {
     @ApiOperation(value = "根据真实姓名查找用户")
     @ApiImplicitParam(name = "name", value = "真实姓名", required = true, dataType = "String")
     @GetMapping(value = "/findByName")
-    public Map<String, Object> findByName(@RequestBody String name) {
-        if (null != userService.findByName(name)) {
-            return Result.successMap(userService.findByName(name));
-        }
-        return Result.failMap("该用户不存在");
+    public RespBean findByName(String name, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> list = userService.findByName(name);
+        int total = userService.total();
+        map.put("data", list);
+        map.put("total", total);
+        return RespBean.ok("", map);
+
     }
 
     /**
@@ -71,18 +87,19 @@ public class AdminController {
      **/
     @ApiOperation(value = "查询所有用户信息")
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1",  dataType = "Integer"),
+            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     }
     )
-    @GetMapping("user/list")
-    public Map<String, Object> findAllUser( Integer pageNum, Integer pageSize) {
-        if (userService.findAll().isEmpty()) {
-            return Result.failMap("用户信息为空");
-        }
+    @GetMapping("/list")
+    public RespBean findAllUser(Integer pageNum, Integer pageSize) {
         //pageNum：当前页数   pageSize：当前页需要显示的数量
         PageHelper.startPage(pageNum, pageSize);
-        return Result.successMap(userService.findAll());
+        List<User> userList = userService.findAll();
+        int total = userService.total();
+        map.put("data", userList);
+        map.put("total", total);
+        return RespBean.ok("", map);
     }
 
     /**
@@ -102,57 +119,39 @@ public class AdminController {
     }
     )
     @PostMapping("/createUser")
-    public Map<String, Object> createUser(@RequestBody User user) throws Exception {
+    public RespBean createUser(@RequestBody User user) throws Exception {
         //设置工号
         user.setNumber(IdUtils.getNumber());
-        //设置用户类型为管理员
-        user.setType(2);
-        //对密码进行加密传输
-        user.setPassword(AESUtils.AESEncrypt(user.getPassword(), KEY));
+        //设置密码
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encode = encoder.encode(user.getPassword());
+        user.setPassword(encode);
         //设置添加时间
         user.setRegisterTime(DateUtils.getSysTime());
-        if (null != userService.findByUsername(user.getUsername())) {
-            return Result.failMap("用户名已经存在,请重新输入");
+        if (userService.loadUserByUsername(user.getUsername()) != null) {
+            return RespBean.error("用户名已经存在,请重新输入");
         }
         userService.createUser(user);
-        return Result.successMap(user);
+        return RespBean.ok("添加成功");
     }
 
     /**
      * @return com.hxx.demo.entity.Result
      * @Author Hxx
-     * @Description //TODO 根据用户名删除用户
+     * @Description //TODO 根据userName删除用户
      * @Date 15:29 2019/11/7
      * @Param [userName]
      **/
-    @ApiOperation(value = "根据用户名删除用户")
-    @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String")
-    @DeleteMapping("/delByUserName{userName}")
-    public Map<String, Object> delByUserName(@PathVariable("userName") String userName) {
+    @ApiOperation(value = "根据userName删除用户")
+    @ApiImplicitParam(name = "userName", value = "userName", required = true, dataType = "String")
+    @GetMapping("/delByUserName")
+    public RespBean delByuserName(String userName) {
         userService.delByUserName(userName);
-        if (userService.findByUsername(userName) == null) {
-            return Result.successMap("删除成功");
-        }
-
-        return Result.failMap("删除失败");
+        return RespBean.ok("删除成功");
+    }
+    @GetMapping("/getUsersByKeywords")
+    public RespBean getUsersByKeywords(String keywords) {
+        return RespBean.ok("", userService.getUsersByKeywords(keywords));
     }
 
-    /**
-     * @return com.hxx.demo.entity.Result
-     * @Author Hxx
-     * @Description //TODO 根据工号或者学号删除用户
-     * @Date 15:30 2019/11/7
-     * @Param [number]
-     **/
-
-    @ApiOperation(value = "根据工号或者学号删除用户")
-    @ApiImplicitParam(name = "number", value = "学号/工号", required = true, dataType = "String")
-    @DeleteMapping("/delByNumber/{number}")
-    public Map<String, Object> delByNumber(@PathVariable("number") String number) {
-        userService.delByNumber(number);
-        if (userService.findByNumber(number).isEmpty()) {
-            return Result.successMap("删除成功");
-        }
-        return Result.failMap("删除失败");
-    }
 }

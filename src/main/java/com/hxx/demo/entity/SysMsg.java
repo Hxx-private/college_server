@@ -13,7 +13,7 @@ public class SysMsg {
     private Long id;
     private Long mid;
     private Integer type;
-    private Long hrid;
+    private Long userId;
     private Integer state;
     private MsgContent msgContent;
 

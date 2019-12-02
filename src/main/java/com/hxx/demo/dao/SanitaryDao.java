@@ -1,9 +1,6 @@
 package com.hxx.demo.dao;
-
 import com.hxx.demo.entity.Sanitary;
 import org.apache.ibatis.annotations.*;
-import org.hibernate.validator.constraints.EAN;
-
 import java.util.List;
 import java.util.Map;
 

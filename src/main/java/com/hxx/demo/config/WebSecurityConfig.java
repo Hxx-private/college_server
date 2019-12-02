@@ -2,7 +2,6 @@ package com.hxx.demo.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hxx.demo.entity.RespBean;
-import com.hxx.demo.entity.Result;
 import com.hxx.demo.service.UserService;
 import com.hxx.demo.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,12 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import java.io.PrintWriter;
 
 /**
- * Created by sang on 2017/12/28.
- */
+ * @Author Hxx
+ * @Description //TODO
+ * @Date 15:27 2019/11/20
+ * @Param
+ * @return
+ **/
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -43,7 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/index.html", "/static/**", "/login_p", "/favicon.ico");
+        web.ignoring().antMatchers("/index.html", "/static/**", "/login_p", "/favicon.ico","/swagger-ui.html","/swagger-resources/configuration/ui","/swagger-resources","/swagger-resources/configuration/security","/v2/api-docs");
     }
 
     @Override
@@ -65,15 +68,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     RespBean respBean;
                     if (e instanceof BadCredentialsException ||
                             e instanceof UsernameNotFoundException) {
-                        respBean = RespBean.error("账户名或者密码输入错误!");
+                        respBean = RespBean.error("用户名或者密码输入错误!");
                     } else if (e instanceof LockedException) {
-                        respBean = RespBean.error("账户被锁定，请联系管理员!");
+                        respBean = RespBean.error("账号被锁定，请联系管理员!");
                     } else if (e instanceof CredentialsExpiredException) {
                         respBean = RespBean.error("密码过期，请联系管理员!");
                     } else if (e instanceof AccountExpiredException) {
-                        respBean = RespBean.error("账户过期，请联系管理员!");
+                        respBean = RespBean.error("账号过期，请联系管理员!");
                     } else if (e instanceof DisabledException) {
-                        respBean = RespBean.error("账户被禁用，请联系管理员!");
+                        respBean = RespBean.error("账号被禁用，请联系管理员!");
                     } else {
                         respBean = RespBean.error("登录失败!");
                     }

@@ -6,14 +6,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * @author Hxx
- */
+ * @Author Hxx
+ * @Description //TODO
+ * @Date 15:27 2019/11/20
+ * @Param
+ * @return
+ **/
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     @Override

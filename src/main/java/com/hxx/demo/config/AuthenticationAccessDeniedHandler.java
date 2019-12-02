@@ -12,10 +12,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- *
- * @author sang
- * @date 2017/12/29
- */
+ * @Author Hxx
+ * @Description //TODO
+ * @Date 15:27 2019/11/20
+ * @Param
+ * @return
+ **/
 @Component
 public class AuthenticationAccessDeniedHandler implements AccessDeniedHandler {
     @Override

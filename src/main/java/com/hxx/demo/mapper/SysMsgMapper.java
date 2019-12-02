@@ -3,13 +3,13 @@ package com.hxx.demo.mapper;
 import com.hxx.demo.entity.MsgContent;
 import com.hxx.demo.entity.SysMsg;
 import com.hxx.demo.entity.User;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 
 import java.util.List;
 
-@Mapper
+/**
+ * @author Hxx
+ */
 public interface SysMsgMapper {
 
     int sendMsg(MsgContent msg);

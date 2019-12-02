@@ -18,3 +18,4 @@ public interface RoleMapper {
 
     int deleteRoleById(Long rid);
 }
+

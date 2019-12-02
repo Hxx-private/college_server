@@ -13,8 +13,12 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Created by sang on 2017/12/28.
- */
+ * @Author Hxx
+ * @Description //TODO
+ * @Date 15:27 2019/11/20
+ * @Param
+ * @return
+ **/
 @Component
 public class UrlAccessDecisionManager implements AccessDecisionManager {
     @Override

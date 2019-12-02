@@ -16,10 +16,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
- * @author sang
- * @date 2017/12/28
- */
+ * @Author Hxx
+ * @Description //TODO
+ * @Date 15:27 2019/11/20
+ * @Param
+ * @return
+ **/
 @Component
 public class  CustomMetadataSource implements FilterInvocationSecurityMetadataSource {
     @Autowired

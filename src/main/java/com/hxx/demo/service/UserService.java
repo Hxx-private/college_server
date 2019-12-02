@@ -2,10 +2,13 @@ package com.hxx.demo.service;
 
 import com.hxx.demo.dao.UserDao;
 import com.hxx.demo.entity.User;
+import com.hxx.demo.mapper.UserMapper;
+import com.hxx.demo.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,27 +21,9 @@ import java.util.Map;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private UserMapper userMapper;
 
-    /**
-     * @Author Hxx
-     * @Description //TODO 用户注册
-     * @Date 16:41 2019/10/28
-     * @Param [user]
-     **/
-    public void addUser(User user) {
-        userDao.addUser(user);
-    }
-
-    /**
-     * @return com.hxx.demo.entity.User
-     * @Author Hxx
-     * @Description //TODO 用户登录
-     * @Date 15:47 2019/10/28
-     * @Param [username, password]
-     **/
-    public User login(String userName, String password) {
-        return userDao.login(userName, password);
-    }
 
     /**
      * @return com.hxx.demo.entity.User
@@ -80,7 +65,7 @@ public class UserService implements UserDetailsService {
      * @Date 17:05 2019/10/28
      * @Param [userName]
      **/
-    public List<Map<String, Object>> findByName(String name) {
+    public List<User> findByName(String name) {
         return userDao.findByName(name);
     }
 
@@ -132,9 +117,9 @@ public class UserService implements UserDetailsService {
     /**
      * @return void
      * @Author Hxx
-     * @Description //TODO 根据用户名删除用户
+     * @Description //TODO 根据id删除用户
      * @Date 15:03 2019/11/7
-     * @Param [user]
+     * @Param [id]
      **/
     public void delByUserName(String userName) {
         userDao.delByUserName(userName);
@@ -159,5 +144,63 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("用户名不对");
         }
         return user;
+    }
+
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 用户注册
+     * @Date 11:26 2019/11/20
+     * @Param [userName, password]
+     **/
+    public int userReg(String userName, String password) {
+        //如果用户名存在，返回错误
+        if (userDao.loadUserByUsername(userName) != null) {
+            return -1;
+        }
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encode = encoder.encode(password);
+        return userDao.userReg(userName, encode);
+    }
+
+    public List<User> getAllUserExceptAdmin() {
+        return userMapper.getAllUser(UserUtils.getCurrentUser().getId());
+    }
+
+    public List<User> getAllUser() {
+        return userMapper.getAllUser(null);
+    }
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.User>
+     * @Author Hxx
+     * @Description //TODO 根据关键字查询
+     * @Date 11:41 2019/12/2
+     * @Param [keywords]
+     **/
+    public List<User> getUsersByKeywords(String keywords) {
+        return userDao.getKeyWords(keywords);
+    }
+
+
+    public int updateUserRoles(Long userId, Long[] rids) {
+        int i = userMapper.deleteRoleByUserId(userId);
+        return userMapper.addRolesForUser(userId, rids);
+    }
+
+    public User getUserById(Long userId) {
+        return userMapper.getUserById(userId);
+    }
+
+    public int deleteUser(Long userId) {
+        return userMapper.deleteUser(userId);
+    }
+
+    public int updateUser(User user) {
+        return userMapper.updateUser(user);
+    }
+
+    public int total() {
+        return userDao.total();
     }
 }

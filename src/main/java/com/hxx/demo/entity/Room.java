@@ -1,5 +1,4 @@
 package com.hxx.demo.entity;
-
 import lombok.Data;
 
 /**

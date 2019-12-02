@@ -1,14 +1,15 @@
 package com.hxx.demo.service;
 
 import com.hxx.demo.dao.SecurityDao;
-import com.hxx.demo.entity.Repair;
 import com.hxx.demo.entity.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class SecurityService {
 
     @Autowired
@@ -21,7 +22,7 @@ public class SecurityService {
      * @Date 15:38 2019/11/8
      * @Param []
      **/
-    public List<Security> findAll() {
+    public List<Security>  findAll() {
         return securityDao.findAll();
     }
 
@@ -39,7 +40,7 @@ public class SecurityService {
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
      * @Author Hxx
-     * @Description //TODO 根据id查找发布隐患信息
+     * @Description //TODO 根据id查找隐患信息
      * @Date 15:39 2019/11/8
      * @Param [id]
      **/

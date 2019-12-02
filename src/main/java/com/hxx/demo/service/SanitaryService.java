@@ -4,6 +4,7 @@ import com.hxx.demo.dao.SanitaryDao;
 import com.hxx.demo.entity.Sanitary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,7 +14,8 @@ import java.util.List;
  * @date 2019/10/31
  */
 @Service
-public class SanitaryService {
+@Transactional
+public class SanitaryService{
 
     @Autowired
     private SanitaryDao sanitaryDao;

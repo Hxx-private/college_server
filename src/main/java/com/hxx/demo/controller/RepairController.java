@@ -6,6 +6,7 @@ import com.hxx.demo.entity.Result;
 import com.hxx.demo.service.RepairService;
 import com.hxx.demo.utils.DateUtils;
 import com.hxx.demo.utils.IdUtils;
+import com.hxx.demo.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -42,13 +43,10 @@ public class RepairController {
     @PostMapping("user/createRepair")
     public Map<String, Object> createRepair(@RequestBody Repair repair) {
         repair.setId(IdUtils.getNumberForPK());
-        //报修人由前端获取当前登录用户
-
-        //宿舍号为当前登录用户的宿舍号
-
+        repair.setApplicant(UserUtils.getCurrentUser().getName());
+        repair.setRoomId(UserUtils.getCurrentUser().getRoomId());
         //默认状态为未处理
         repair.setStatus(0);
-        //获取报修时间
         repair.setTime(DateUtils.getSysTime());
         repairService.create(repair);
         if (null != repairService.findById(repair.getId())) {
@@ -72,8 +70,7 @@ public class RepairController {
     })
     @PutMapping("user/handle")
     public Map<String, Object> handleRepair(@RequestBody Repair repair) {
-        repairService.findById(repair.getId());
-        //处理人为当前登录的维修人员
+        repair.setOperator(UserUtils.getCurrentUser().getName());
         repair.setStatus(1);
         repair.setEndTime(DateUtils.getSysTime());
         repairService.handleRepair(repair);
@@ -93,7 +90,7 @@ public class RepairController {
     @ApiOperation(value = "查询所有报修信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数",  dataType = "Integer")
+            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     }
     )
     @GetMapping("/findAllRepair")
@@ -115,13 +112,13 @@ public class RepairController {
     @ApiOperation(value = "根据创建者查询所有报修信息", notes = "根据applicant创建者查询他所提交过的报修信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "applicant", value = "报修人", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1",   dataType = "Integer"),
+            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     })
 
     @GetMapping("/findByApplicant/{applicant}")
     public Map<String, Object> findByApplicant(@PathVariable("applicant") String applicant, Integer pageNum, Integer pageSize) {
-        if (repairService.getByApplicant(applicant) == null) {
+        if (repairService.getByApplicant(UserUtils.getCurrentUser().getName()) == null) {
             Result.failMap("您还没有提交过报修信息");
         }
         PageHelper.startPage(pageNum, pageSize);
@@ -137,8 +134,8 @@ public class RepairController {
      **/
     @ApiOperation(value = "查询当天所有报修信息")
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1",   dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数",  dataType = "Integer")
+            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     })
     @GetMapping("/getTodayRepair")
     public Map<String, Object> getTodayRepair(Integer pageNum, Integer pageSize) {
@@ -167,22 +164,5 @@ public class RepairController {
         return Result.failMap("删除失败");
     }
 
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Author Hxx
-     * @Description //TODO 根据报修人删除报修信息
-     * @Date 16:07 2019/11/8
-     * @Param [checkTime]
-     **/
-    @ApiOperation("根据报修人删除报修信息")
-    @ApiImplicitParam(name = "applicant", value = "报修人", required = true, dataType = "String")
-    @DeleteMapping("/repair/deleteRepair/{applicant}")
-    public Map<String, Object> deleteRepair(@PathVariable("applicant") String applicant) {
-        repairService.deleteRepair(applicant);
-        if (repairService.getByApplicant(applicant) == null) {
-            return Result.successMap("删除成功");
-        }
-        return Result.failMap("删除失败");
-    }
 
 }

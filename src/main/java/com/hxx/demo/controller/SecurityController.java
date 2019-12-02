@@ -2,7 +2,7 @@ package com.hxx.demo.controller;
 
 
 import com.github.pagehelper.PageHelper;
-import com.hxx.demo.entity.Result;
+import com.hxx.demo.entity.RespBean;
 import com.hxx.demo.entity.Security;
 import com.hxx.demo.service.SecurityService;
 import com.hxx.demo.utils.DateUtils;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Hxx
@@ -29,7 +28,7 @@ import java.util.Map;
 @Api(value = "SanitaryController")
 @RestController
 @RequestMapping("/api")
-public class SecurityController {
+public class SecurityController{
     @Autowired
     private SecurityService securityService;
 
@@ -39,12 +38,9 @@ public class SecurityController {
             @ApiImplicitParam(name = "pageSize", value = "每页显示的条数", dataType = "Integer")
     })
     @GetMapping("/security/findAll")
-    public Map<String, Object> findAll(Integer pageNum, Integer pageSize) {
-        if (securityService.findAll().isEmpty()) {
-            return Result.failMap("无安全隐患信息");
-        }
+    public List<Security> findAll(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        return Result.successMap(securityService.findAll());
+        return securityService.findAll();
     }
 
 
@@ -55,7 +51,7 @@ public class SecurityController {
 
     })
     @PostMapping("/security/securityAdd")
-    public Map<String, Object> securityAdd(@RequestBody Security security) {
+    public RespBean securityAdd(@RequestBody Security security) {
         //设置id
         security.setId(IdUtils.getNumberForPK());
         //处理状态默认为0
@@ -63,13 +59,12 @@ public class SecurityController {
         //获取系统时间
         security.setDiscoverTime(DateUtils.getSysTime());
         securityService.insertSecurity(security);
-
         //先存入数据，然后再把数据读出来返回
         if (securityService.findById(security.getId()) == null) {
 
-            return Result.failMap("添加失败");
+            return RespBean.error("添加失败");
         } else {
-            return Result.successMap(security);
+            return RespBean.error("添加成功");
         }
     }
 
@@ -80,14 +75,10 @@ public class SecurityController {
             @ApiImplicitParam(name = "pageSize", value = "每页显示的条数", dataType = "Integer")
     })
     @GetMapping("/security/selectByRoomId/{roomId}")
-    public Map<String, Object> selectByRoomId(@PathVariable("roomId") String roomId, Integer pageNum, Integer pageSize) {
-        if (securityService.findByRoomId(roomId).isEmpty()) {
-
-            return Result.failMap("该宿舍没有报修过任何东西或请输入正确的宿舍号");
-        } else {
+    public List<Security> selectByRoomId(@PathVariable("roomId") String roomId, Integer pageNum, Integer pageSize) {
             PageHelper.startPage(pageNum, pageSize);
-            return Result.successMap(securityService.findByRoomId(roomId));
-        }
+            return securityService.findByRoomId(roomId);
+
     }
 
     @ApiOperation(value = "根据发现人查找安全隐患信息")
@@ -97,14 +88,10 @@ public class SecurityController {
             @ApiImplicitParam(name = "pageSize", value = "每页显示的条数", dataType = "Integer")
     })
     @GetMapping("/security/findByDiscover/{discover}")
-    public Map<String, Object> findByDiscover(@PathVariable("discover") String discover, Integer pageNum, Integer pageSize) {
-        if (securityService.findByDiscover(discover).isEmpty()) {
+    public List<Security> findByDiscover(@PathVariable("discover") String discover, Integer pageNum, Integer pageSize) {
 
-            return Result.failMap(discover + "，您没有报修过任何东西");
-        } else {
             PageHelper.startPage(pageNum, pageSize);
-            return Result.successMap(securityService.findByDiscover(discover));
-        }
+            return securityService.findByDiscover(discover);
 
     }
 
@@ -116,26 +103,26 @@ public class SecurityController {
     })
 
     @GetMapping("/security/status/{status}")
-    public Map<String, Object> status(@PathVariable("status") Integer status, Integer pageNum, Integer pageSize) {
+    public RespBean status(@PathVariable("status") Integer status, Integer pageNum, Integer pageSize) {
         if (status == 0 || status == 1) {
             PageHelper.startPage(pageNum, pageSize);
-            return Result.successMap(securityService.EventStatus(status));
+            return RespBean.ok("查询成功",securityService.EventStatus(status));
 
         } else {
-            return Result.failMap("状态码错误");
+            return RespBean.error("状态码错误");
         }
     }
 
     @ApiOperation("导出未处理的安全隐患信息表")
     @GetMapping("/security/getExcel")
-    public Map<String, Object> getExcel(HttpServletRequest request, HttpServletResponse response) {
+    public RespBean getExcel(HttpServletRequest request, HttpServletResponse response) {
         List<Security> securitity = securityService.EventStatus(0);
         String[] columnNames = {"ID", "描述", "发现人", "处理人", "状态", "发现时间", "房间号"};
         String fileName = "事件未处理表";
         ExportExcelWrapper<Security> util = new ExportExcelWrapper<Security>();
         util.exportExcel(fileName, fileName, columnNames, securitity, response, ExportExcelUtil.EXCEL_FILE_2003);
 
-        return Result.successMap("下载成功");
+        return RespBean.ok("下载成功");
 
     }
 
@@ -149,12 +136,12 @@ public class SecurityController {
     @ApiOperation("根据宿舍id来删除安全隐患信息")
     @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String")
     @DeleteMapping("/security/delBySeRoomId{roomId}")
-    public Map<String, Object> delBySeRoomId(@PathVariable("roomId") String roomId) {
+    public RespBean delBySeRoomId(@PathVariable("roomId") String roomId) {
         securityService.delBySeroomId(roomId);
         if (securityService.findByRoomId(roomId) == null) {
-            return Result.successMap("删除成功");
+            return RespBean.ok("删除成功");
         }
-        return Result.failMap("删除失败");
+        return RespBean.error("删除失败");
     }
 
     /**
@@ -167,12 +154,12 @@ public class SecurityController {
     @ApiOperation("根据处理时间删除安全隐患信息")
     @ApiImplicitParam(name = "operateTime", value = "处理时间", required = true, dataType = "String")
     @DeleteMapping("/delByoperateTime/{operateTime}")
-    public Map<String, Object> delByoperateTime(@PathVariable("operateTime") String operateTime) {
+    public RespBean delByoperateTime(@PathVariable("operateTime") String operateTime) {
         securityService.delByoperateTime(operateTime);
         if (securityService.findByOpTime(operateTime).isEmpty()) {
-            return Result.successMap("删除成功");
+            return RespBean.ok("删除成功");
         }
-        return Result.failMap("删除失败");
+        return RespBean.error("删除失败");
     }
 
     /**
@@ -185,15 +172,15 @@ public class SecurityController {
     @ApiOperation(value = "处理安全隐患信息")
     @ApiImplicitParam(name = "operator", value = "处理人 获取当前登录用户", required = true, dataType = "String")
     @PutMapping("/security/handleSecurity")
-    public Map<String, Object> handleSecurity(@RequestBody Security security) {
+    public RespBean handleSecurity(@RequestBody Security security) {
         securityService.findById(security.getId());
         security.setStatus(1);
         security.setOperateTime(DateUtils.getSysTime());
         securityService.handleSecurity(security);
         if (securityService.findById(security.getId()).getStatus() == 1) {
-            return Result.successMap(security);
+            return RespBean.ok("处理成功");
         }
-        return Result.failMap("处理失败");
+        return  RespBean.ok("处理失败");
     }
     //将没有修好的所有信息生成一个excel表格并下载到本地
     /*@GetMapping("/security/ExcelDownloads")

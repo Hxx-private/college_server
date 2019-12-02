@@ -7,8 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by sang on 2018/1/13.
- */
+ * @Author Hxx
+ * @Description //TODO 
+ * @Date 8:47 2019/12/1
+ * @Param 
+ * @return 
+ **/
 public class DateConverter implements Converter<String,Date> {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     @Override

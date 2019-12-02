@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.hxx.demo.entity.Result;
 import com.hxx.demo.entity.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Map;
  * @author Hxx
  */
 @Service
+@Transactional
 public class TokenService {
 
     public Map<String,Object> getToken(User user) {

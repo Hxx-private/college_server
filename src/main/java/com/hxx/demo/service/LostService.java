@@ -1,14 +1,13 @@
 package com.hxx.demo.service;
 
 import com.hxx.demo.dao.LostDao;
-
 import com.hxx.demo.entity.Lost;
 import com.hxx.demo.entity.PeriodTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Hxx
@@ -16,6 +15,7 @@ import java.util.Map;
  * @date 2019/10/29
  */
 @Service
+@Transactional
 public class LostService {
 
     @Autowired
@@ -39,9 +39,11 @@ public class LostService {
      * @Date 9:37 2019/10/30
      * @Param [lost]
      **/
-    public void insertLost(Lost lost) {
-
-        lostDao.insertLost(lost);
+    public int insertLost(Lost lost) {
+        if (!lostDao.findBycreateTime(lost.getCreateTime()).isEmpty()) {
+            return -1;
+        }
+        return lostDao.insertLost(lost);
     }
 
 
@@ -78,16 +80,17 @@ public class LostService {
         return lostDao.getLostByPeriod(periodTime);
     }
 
-/**
- * @Author Hxx
- * @Description //TODO 根据发布时间查询失物信息帖子
- * @Date 16:36 2019/11/8
- * @Param [createTime]
- * @return java.util.List<com.hxx.demo.entity.Lost>
- **/
-    public List<Lost>findBycreateTime(String createTime){
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Lost>
+     * @Author Hxx
+     * @Description //TODO 根据发布时间查询失物信息帖子
+     * @Date 16:36 2019/11/8
+     * @Param [createTime]
+     **/
+    public List<Lost> findBycreateTime(String createTime) {
         return lostDao.findBycreateTime(createTime);
     }
+
     /**
      * @return void
      * @Author Hxx

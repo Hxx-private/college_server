@@ -4,6 +4,7 @@ import com.hxx.demo.dao.RepairDao;
 import com.hxx.demo.entity.Repair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,7 +12,8 @@ import java.util.List;
  * @author Hxx
  */
 @Service
-public class RepairService {
+@Transactional
+public class RepairService{
     @Autowired
     private RepairDao repairDao;
 

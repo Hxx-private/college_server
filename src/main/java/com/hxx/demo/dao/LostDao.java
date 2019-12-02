@@ -5,7 +5,6 @@ import com.hxx.demo.entity.PeriodTime;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author Hxx
@@ -36,7 +35,7 @@ public interface LostDao {
      * @Param [lost]
      **/
     @Insert("INSERT INTO lost VALUES(#{lost.id},  #{lost.content},#{lost.creater},#{lost.createTime})")
-    List<Map<String, Object>> insertLost(@Param("lost") Lost lost);
+   int insertLost(@Param("lost") Lost lost);
 
 
     /**

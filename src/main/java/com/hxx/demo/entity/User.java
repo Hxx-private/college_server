@@ -2,7 +2,6 @@ package com.hxx.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.apache.ibatis.annotations.Property;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +19,6 @@ public class User implements UserDetails {
     private String userName;
     private String password;
     private String pwdNew;
-    private Integer type;
     private boolean enabled;
     private String name;
     private Integer sex;
@@ -31,13 +29,18 @@ public class User implements UserDetails {
     private String special;
     private String tel;
     private String registerTime;
-    private String imgUrl;
+    private String userface;
     private List<Role> roles;
 
 
     @Override
     public String getUsername() {
         return userName;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 
     @JsonIgnore
@@ -58,18 +61,13 @@ public class User implements UserDetails {
         return true;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-
     @JsonIgnore
     @Override
     public String getPassword() {
         return password;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
          List<GrantedAuthority> authorities = new ArrayList<>();
