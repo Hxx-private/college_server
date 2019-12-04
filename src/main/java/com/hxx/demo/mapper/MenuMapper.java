@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by sang on 2017/12/28.
  */
-public interface MenuMapper {
+public interface MenuMapper  {
 
 
     List<Menu> getAllMenu();

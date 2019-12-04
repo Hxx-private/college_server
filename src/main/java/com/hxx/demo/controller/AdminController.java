@@ -1,13 +1,10 @@
 package com.hxx.demo.controller;
 
 import com.github.pagehelper.PageHelper;
-import com.hxx.demo.entity.RespBean;
-import com.hxx.demo.entity.Result;
-import com.hxx.demo.entity.User;
+import com.hxx.demo.entity.*;
 import com.hxx.demo.service.UserService;
 import com.hxx.demo.utils.DateUtils;
 import com.hxx.demo.utils.IdUtils;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -22,42 +19,34 @@ import java.util.Map;
 /**
  * @author Hxx
  */
-@Api(value = "管理员事务控制层")
 @RestController
 @RequestMapping("/user")
-public class AdminController {
+public class AdminController  {
     Map<String, Object> map = new HashMap<>();
-    @Autowired
-    private UserService userService;
-
 
     /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
-     * @Description //TODO 根据学号查找用户信息
-     * @Date 14:30 2019/10/30
-     * @Param [number]
+     * @Description //TODO 根据指定字段查询用户
+     * @Date 11:53 2019/12/2
+     * @Param
+     * @return
      **/
-    @ApiOperation(value = "根据学号或工号查找用户信息")
-    @ApiImplicitParam(name = "number", value = "用户学号/工号", required = true, dataType = "String")
-    @GetMapping(value = "/findNumber")
-    public Map<String, Object> findByUserNumber(@RequestBody String number) {
-        if (!userService.findByNumber(number).isEmpty()) {
-            return Result.successMap(userService.findByNumber(number));
-        }
-        return Result.failMap("该用户不存在");
-    }
-    @GetMapping("/findByKeyWords")
-    public RespBean findByKeyWords(Integer pageNum,Integer pageSize,String keywords){
-        PageHelper.startPage(pageNum, pageSize);
-        List<User> list = userService.getUsersByKeywords(keywords);
+    @Autowired
+    private UserService userService;
+    @PostMapping(value = "findByKeyWords",consumes="application/json;charset=UTF-8")
+    public HttpEntity findByKeyWords( @RequestBody GridRequest gridJson) {
+        HttpEntity httpEntity = new HttpEntity();
+        Grid grid = new Grid();
+        List<User> list = this.userService.getGrid(gridJson);
         int total = userService.total();
-        map.put("data", list);
-        map.put("total", total);
-
-        return RespBean.ok("",map);
+        grid.setData(list);
+        grid.setPageIndex(gridJson.getPageIndex());
+        grid.setTotalCount(total);
+        grid.setPageItemCount(grid.getPageItemCount());
+        httpEntity.setData(grid);
+        httpEntity.setStatus(200);
+        return httpEntity;
     }
-
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
@@ -132,7 +121,7 @@ public class AdminController {
             return RespBean.error("用户名已经存在,请重新输入");
         }
         userService.createUser(user);
-        return RespBean.ok("添加成功");
+        return RespBean.ok("添加成功", user);
     }
 
     /**
@@ -149,9 +138,4 @@ public class AdminController {
         userService.delByUserName(userName);
         return RespBean.ok("删除成功");
     }
-    @GetMapping("/getUsersByKeywords")
-    public RespBean getUsersByKeywords(String keywords) {
-        return RespBean.ok("", userService.getUsersByKeywords(keywords));
-    }
-
 }

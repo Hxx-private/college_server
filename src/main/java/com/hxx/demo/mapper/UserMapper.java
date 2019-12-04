@@ -6,15 +6,14 @@ import org.apache.ibatis.annotations.Param;
 
 
 import java.util.List;
-
-public interface UserMapper {
+public interface UserMapper  {
     User loadUserByUsername(@Param("userName") String userName);
 
     List<Role> getRolesByUserId(Long id);
 
     int userReg(@Param("userName") String userName, @Param("password") String password);
 
-    List<User> getUsersByKeywords(@Param("keywords") String keywords);
+    List<User> getUsersByKeywords(@Param("sql") String sql);
 
     int updateUser(User user);
 

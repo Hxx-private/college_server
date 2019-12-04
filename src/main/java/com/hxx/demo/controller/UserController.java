@@ -101,7 +101,8 @@ public class UserController {
 
     @RequestMapping("/{keywords}")
     public List<User> getUsersByKeywords(@PathVariable(required = false) String keywords) {
-        return userService.getUsersByKeywords(keywords);
+        List<User> hrs = userService.getUsersByKeywords(keywords);
+        return hrs;
     }
 
     @RequestMapping("/id/{userId}")

@@ -1,7 +1,9 @@
 package com.hxx.demo.service;
 
 import com.hxx.demo.dao.UserDao;
+import com.hxx.demo.entity.GridRequest;
 import com.hxx.demo.entity.User;
+import com.hxx.demo.utils.ParamsInitUtils;
 import com.hxx.demo.mapper.UserMapper;
 import com.hxx.demo.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +26,6 @@ public class UserService implements UserDetailsService {
     private UserDao userDao;
     @Autowired
     private UserMapper userMapper;
-
 
     /**
      * @return com.hxx.demo.entity.User
@@ -146,13 +148,13 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    /**
-     * @return int
-     * @Author Hxx
-     * @Description //TODO 用户注册
-     * @Date 11:26 2019/11/20
-     * @Param [userName, password]
-     **/
+/**
+ * @Author Hxx
+ * @Description //TODO 用户注册
+ * @Date 11:26 2019/11/20
+ * @Param [userName, password]
+ * @return int
+ **/
     public int userReg(String userName, String password) {
         //如果用户名存在，返回错误
         if (userDao.loadUserByUsername(userName) != null) {
@@ -171,15 +173,9 @@ public class UserService implements UserDetailsService {
         return userMapper.getAllUser(null);
     }
 
-    /**
-     * @return java.util.List<com.hxx.demo.entity.User>
-     * @Author Hxx
-     * @Description //TODO 根据关键字查询
-     * @Date 11:41 2019/12/2
-     * @Param [keywords]
-     **/
+
     public List<User> getUsersByKeywords(String keywords) {
-        return userDao.getKeyWords(keywords);
+        return userMapper.getUsersByKeywords(keywords);
     }
 
 
@@ -195,12 +191,18 @@ public class UserService implements UserDetailsService {
     public int deleteUser(Long userId) {
         return userMapper.deleteUser(userId);
     }
-
     public int updateUser(User user) {
         return userMapper.updateUser(user);
     }
 
-    public int total() {
+    public int total(){
         return userDao.total();
+    }
+
+    public List<User> getGrid(GridRequest gridJson) {
+        ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
+        String sql = paramsInitUtils.initParams(gridJson, "user");
+        List<User> users = this.userMapper.getUsersByKeywords(sql);
+        return users;
     }
 }

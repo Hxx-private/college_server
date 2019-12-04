@@ -153,6 +153,6 @@ public interface UserDao {
     @Select("SELECT COUNT(*) FROM user")
     int total();
 
-    @Select("SELECT * FROM USER WHERE CONCAT_WS(`name`,special,depart,roomId,number,userName,sex) LIKE '%#{keywords}%'")
-    List<User>getKeyWords(@Param("keywords") String keywords);
+    @Select("SELECT * FROM user WHERE CONCAT_WS(`name`,special,depart,roomId,number,userName,sex) LIKE '{keywords}%'")
+    List<User>getKeyWords(@Param("keywords") Object keywords );
 }
