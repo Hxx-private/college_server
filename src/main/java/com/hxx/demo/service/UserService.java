@@ -202,7 +202,7 @@ public class UserService implements UserDetailsService {
     public List<User> getGrid(GridRequest gridJson) {
         ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
         String sql = paramsInitUtils.initParams(gridJson, "user");
-        List<User> users = this.userMapper.getUsersByKeywords(sql);
+        List<User> users = this.userMapper.findBykeywords(sql);
         return users;
     }
 }

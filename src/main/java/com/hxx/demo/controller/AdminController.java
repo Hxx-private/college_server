@@ -38,7 +38,7 @@ public class AdminController  {
         HttpEntity httpEntity = new HttpEntity();
         Grid grid = new Grid();
         List<User> list = this.userService.getGrid(gridJson);
-        int total = userService.total();
+        int total = list.size();
         grid.setData(list);
         grid.setPageIndex(gridJson.getPageIndex());
         grid.setTotalCount(total);

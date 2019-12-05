@@ -13,7 +13,7 @@ public interface UserMapper  {
 
     int userReg(@Param("userName") String userName, @Param("password") String password);
 
-    List<User> getUsersByKeywords(@Param("sql") String sql);
+    List<User> getUsersByKeywords(@Param("keywords") String keywords);
 
     int updateUser(User user);
 
@@ -26,4 +26,6 @@ public interface UserMapper  {
     int deleteUser(Long userId);
 
     List<User> getAllUser(@Param("currentId") Long currentId);
+
+    List<User> findBykeywords(@Param("sql") String sql);
 }
