@@ -18,7 +18,7 @@ public interface RoomDao{
      * @Date 9:28 2019/11/7
      * @Param [room]
      **/
-    @Insert("INSERT INTO user (room_id,remarks,num) VALUES (#{room.roomId},#{room.remarks},#{room.num}")
+    @Insert("INSERT INTO user (roomId,remarks,num,createTime) VALUES (#{room.roomId},#{room.remarks},#{room.num},#{room.createTime}")
     void addRoom(@Param("room") Room room);
 
     /**
@@ -28,7 +28,7 @@ public interface RoomDao{
      * @Date 9:28 2019/11/7
      * @Param [roomId]
      **/
-    @Delete("delete  from room where room_id=#{roomId}")
+    @Delete("delete  from room where roomId=#{roomId}")
     void deltRoom(@Param("roomId") String roomId);
 
     /**
@@ -38,7 +38,7 @@ public interface RoomDao{
      * @Date 10:05 2019/11/7
      * @Param [roomId]
      **/
-    @Select("delete  from room where room_id=#{roomId}")
+    @Select("DELETE  FROM room where roomId=#{roomId}")
     List<Room> findById(@Param("roomId") String roomId);
 
     /**
@@ -48,6 +48,6 @@ public interface RoomDao{
      * @Date 8:54 2019/11/11
      * @Param []
      **/
-    @Select("select * from room")
+    @Select("SELECT * FROM v_build_room")
     List<Room> findAllRoomInfo();
 }

@@ -106,12 +106,12 @@ public class UserController {
     }
 
     @RequestMapping("/id/{userId}")
-    public User getHrById(@PathVariable Long userId) {
+    public User getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId);
     }
 
     @DeleteMapping(value = "/{userId}")
-    public RespBean deleteHr(@PathVariable Long userId) {
+    public RespBean deleteUser(@PathVariable Long userId) {
         if (userService.deleteUser(userId) == 1) {
             return RespBean.ok("删除成功!");
         }

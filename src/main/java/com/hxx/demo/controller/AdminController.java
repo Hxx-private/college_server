@@ -78,8 +78,7 @@ public class AdminController  {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
-    }
-    )
+    } )
     @GetMapping("/list")
     public RespBean findAllUser(Integer pageNum, Integer pageSize) {
         //pageNum：当前页数   pageSize：当前页需要显示的数量
@@ -90,6 +89,7 @@ public class AdminController  {
         map.put("total", total);
         return RespBean.ok("", map);
     }
+
 
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
@@ -137,5 +137,14 @@ public class AdminController  {
     public RespBean delByuserName(String userName) {
         userService.delByUserName(userName);
         return RespBean.ok("删除成功");
+    }
+
+
+    @PostMapping("/updateUser")
+    public RespBean updateUser(@RequestBody User user) {
+        if (userService.updateUser(user) == 1) {
+            return RespBean.ok("更新成功!");
+        }
+        return RespBean.error("更新失败!");
     }
 }

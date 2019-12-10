@@ -1,6 +1,8 @@
 package com.hxx.demo.entity;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author Hxx
  */
@@ -9,6 +11,13 @@ public class Room {
     private String roomId;
     //床位数
     public  Integer num;
+   //备注
     private String remarks;
+
+    private Integer buildId;
+
+    private Integer bNum;
+
+    private Date createTime;
 
 }
