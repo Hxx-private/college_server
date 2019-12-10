@@ -71,6 +71,7 @@ D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\User.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\controller\SystemBasicController.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Lost.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\MenuMeta.java
+D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Build.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\mapper\UserMapper.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\service\TokenService.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\mapper\RoleMapper.java

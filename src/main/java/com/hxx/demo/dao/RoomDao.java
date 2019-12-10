@@ -28,8 +28,11 @@ public interface RoomDao{
      * @Date 9:28 2019/11/7
      * @Param [roomId]
      **/
-    @Delete("delete  from room where roomId=#{roomId}")
+    @Delete("DELETE  FROM room where roomId=#{roomId}")
     void deltRoom(@Param("roomId") String roomId);
+
+    @Delete("DELETE  FROM build_room where roomId=#{roomId}")
+    void delRoomInfo(@Param("roomId") String roomId);
 
     /**
      * @return java.util.List<com.hxx.demo.entity.Room>
@@ -50,4 +53,5 @@ public interface RoomDao{
      **/
     @Select("SELECT * FROM v_build_room")
     List<Room> findAllRoomInfo();
+
 }

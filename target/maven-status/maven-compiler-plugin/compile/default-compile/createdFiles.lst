@@ -64,6 +64,7 @@ com\hxx\demo\entity\MenuRole.class
 com\hxx\demo\config\WebSecurityConfig.class
 com\hxx\demo\config\SwaggerConfig.class
 com\hxx\demo\dao\SecurityDao.class
+com\hxx\demo\entity\Build.class
 com\hxx\demo\entity\UserRole.class
 com\hxx\demo\entity\HttpEntity.class
 com\hxx\demo\utils\FileUtils.class

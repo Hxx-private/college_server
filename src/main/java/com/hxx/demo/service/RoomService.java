@@ -46,8 +46,11 @@ public class RoomService {
      * @Date 9:42 2019/11/7
      * @Param [id]
      **/
-    public void delRoom(String id) {
-        roomDao.deltRoom(id);
+    public void delRoom(String roomId) {
+        roomDao.deltRoom(roomId);
+    }
+    public void delRoomInfo(String roomId) {
+        roomDao.delRoomInfo(roomId);
     }
 
     /**

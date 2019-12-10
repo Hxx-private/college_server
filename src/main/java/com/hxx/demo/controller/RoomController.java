@@ -84,10 +84,11 @@ public class RoomController {
     @DeleteMapping("delRoom/{roomId}")
     public RespBean delRoom(@PathVariable("roomId") String roomId) {
         roomService.delRoom(roomId);
-        if (!roomService.findById(roomId).isEmpty()) {
-            return RespBean.error("删除失败");
+        roomService.delRoomInfo(roomId);
+        if (roomService.findById(roomId).isEmpty()) {
+            return RespBean.ok("删除成功");
         }
-        return RespBean.ok("删除成功");
+        return RespBean.error("删除失败");
     }
 
 }
