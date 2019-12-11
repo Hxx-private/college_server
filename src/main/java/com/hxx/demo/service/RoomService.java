@@ -1,7 +1,9 @@
 package com.hxx.demo.service;
 
 import com.hxx.demo.dao.RoomDao;
+import com.hxx.demo.entity.GridRequest;
 import com.hxx.demo.entity.Room;
+import com.hxx.demo.utils.ParamsInitUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,5 +64,14 @@ public class RoomService {
      **/
     public List<Room> findById(String roomId) {
         return roomDao.findById(roomId);
+    }
+
+
+
+    public List<Room> getGrid(GridRequest gridJson) {
+        ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
+        String sql = paramsInitUtils.initParams(gridJson, "room");
+        List<Room> rooms = this.roomDao.findBykeywords(sql);
+        return rooms;
     }
 }

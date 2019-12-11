@@ -91,4 +91,19 @@ public class RoomController {
         return RespBean.error("删除失败");
     }
 
+    @PostMapping(value = "findByKeyWords",consumes="application/json;charset=UTF-8")
+    public HttpEntity findByKeyWords( @RequestBody GridRequest gridJson) {
+        HttpEntity httpEntity = new HttpEntity();
+        Grid grid = new Grid();
+        List<Room> list = this.roomService.getGrid(gridJson);
+        int total = list.size();
+        grid.setData(list);
+        grid.setPageIndex(gridJson.getPageIndex());
+        grid.setTotalCount(total);
+        grid.setPageItemCount(grid.getPageItemCount());
+        httpEntity.setData(grid);
+        httpEntity.setStatus(200);
+        return httpEntity;
+    }
+
 }

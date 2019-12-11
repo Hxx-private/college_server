@@ -2,6 +2,7 @@ package com.hxx.demo.dao;
 
 
 import com.hxx.demo.entity.Room;
+import com.hxx.demo.entity.User;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * @author Hxx
  */
 @Mapper
-public interface RoomDao{
+public interface RoomDao {
     /**
      * @return void
      * @Author Hxx
@@ -54,4 +55,6 @@ public interface RoomDao{
     @Select("SELECT * FROM v_build_room")
     List<Room> findAllRoomInfo();
 
+    @Select(" SELECT * FROM user WHERE  ${sql}")
+    List<Room> findBykeywords(@Param("sql") String sql);
 }
