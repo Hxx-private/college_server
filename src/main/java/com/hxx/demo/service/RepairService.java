@@ -1,7 +1,9 @@
 package com.hxx.demo.service;
 
 import com.hxx.demo.dao.RepairDao;
+import com.hxx.demo.entity.GridRequest;
 import com.hxx.demo.entity.Repair;
+import com.hxx.demo.utils.ParamsInitUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,20 +26,20 @@ public class RepairService{
      * @Date 17:01 2019/10/31
      * @Param [repair]
      **/
-    public void create(Repair repair) {
-        repairDao.createRepairForm(repair);
+    public int create(Repair repair) {
+       return repairDao.createRepairForm(repair);
     }
 
 
     /**
      * @return com.hxx.demo.entity.User
      * @Author Hxx
-     * @Description //TODO 根据id查找报修信息
+     * @Description //TODO 根据status查找报修信息
      * @Date 17:05 2019/10/28
-     * @Param [userName]
+     * @Param [status]
      **/
-    public Repair findById(String id) {
-        return repairDao.findById(id);
+    public List<Repair> findByStatus() {
+        return repairDao.findByStatus();
     }
 
     /**
@@ -47,8 +49,8 @@ public class RepairService{
      * @Date 10:13 2019/11/1
      * @Param [repair]
      **/
-    public void handleRepair(Repair repair) {
-        repairDao.handleRepair(repair);
+    public int handleRepair(Repair repair) {
+        return repairDao.handleRepair(repair);
     }
 
 
@@ -93,8 +95,8 @@ public class RepairService{
      * @Date 15:03 2019/11/7
      * @Param [user]
      **/
-    public void deleteRepByRid(String roomId) {
-        repairDao.deleteRepByRid(roomId);
+    public int deleteRecord() {
+        return repairDao.deleteRecord();
     }
 
     /**
@@ -108,4 +110,14 @@ public class RepairService{
         repairDao.deleteRepair(applicant);
     }
 
+    public List<Repair> getGrid(GridRequest gridJson) {
+        ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
+        String sql = paramsInitUtils.initParams(gridJson, "repair");
+        List<Repair> repairs = this.repairDao.findBykeywords(sql);
+        return repairs;
+    }
+
+    public int deleteById(String id) {
+        return repairDao.deleteById(id);
+    }
 }

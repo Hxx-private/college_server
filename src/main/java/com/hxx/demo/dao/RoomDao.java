@@ -20,7 +20,7 @@ public interface RoomDao {
      * @Param [room]
      **/
     @Insert("INSERT INTO user (roomId,remarks,num,createTime) VALUES (#{room.roomId},#{room.remarks},#{room.num},#{room.createTime}")
-    void addRoom(@Param("room") Room room);
+    int addRoom(@Param("room") Room room);
 
     /**
      * @return void
@@ -30,10 +30,10 @@ public interface RoomDao {
      * @Param [roomId]
      **/
     @Delete("DELETE  FROM room where roomId=#{roomId}")
-    void deltRoom(@Param("roomId") String roomId);
+    int deltRoom(@Param("roomId") String roomId);
 
     @Delete("DELETE  FROM build_room where roomId=#{roomId}")
-    void delRoomInfo(@Param("roomId") String roomId);
+    int delRoomInfo(@Param("roomId") String roomId);
 
     /**
      * @return java.util.List<com.hxx.demo.entity.Room>
@@ -55,6 +55,10 @@ public interface RoomDao {
     @Select("SELECT * FROM v_build_room")
     List<Room> findAllRoomInfo();
 
-    @Select(" SELECT * FROM user WHERE  ${sql}")
+    @Select(" SELECT * FROM v_build_room WHERE  ${sql}")
     List<Room> findBykeywords(@Param("sql") String sql);
+
+    @Update("update room set roomId=#{roomId},num=#{num},remarks=#{remarks}")
+    int updateRoom(@Param("room") Room room);
 }
+

@@ -5,10 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.hxx.demo.entity.RespBean;
 import com.hxx.demo.entity.Security;
 import com.hxx.demo.service.SecurityService;
-import com.hxx.demo.utils.DateUtils;
-import com.hxx.demo.utils.ExportExcelUtil;
-import com.hxx.demo.utils.ExportExcelWrapper;
-import com.hxx.demo.utils.IdUtils;
+import com.hxx.demo.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -18,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Hxx
@@ -27,20 +26,25 @@ import java.util.List;
 
 @Api(value = "SanitaryController")
 @RestController
-@RequestMapping("/api")
-public class SecurityController{
+@RequestMapping("/security")
+public class SecurityController {
     @Autowired
     private SecurityService securityService;
 
-    @ApiOperation(value = "查询所有安全隐患信息")
+    @ApiOperation(value = "历史检查记录")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "pageNum", value = "当前页", dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "每页显示的条数", dataType = "Integer")
     })
-    @GetMapping("/security/findAll")
-    public List<Security> findAll(Integer pageNum, Integer pageSize) {
+    @GetMapping("/findAll")
+    public RespBean findAll(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
         PageHelper.startPage(pageNum, pageSize);
-        return securityService.findAll();
+        List<Security> list = securityService.findAll();
+        int total = list.size();
+        map.put("data", list);
+        map.put("total", total);
+        return RespBean.ok("", map);
     }
 
 
@@ -50,22 +54,19 @@ public class SecurityController{
             @ApiImplicitParam(name = "discover", value = "发布人  由前端获取当前登录用户", required = true, dataType = "String")
 
     })
-    @PostMapping("/security/securityAdd")
-    public RespBean securityAdd(@RequestBody Security security) {
-        //设置id
-        security.setId(IdUtils.getNumberForPK());
-        //处理状态默认为0
-        security.setStatus(0);
-        //获取系统时间
-        security.setDiscoverTime(DateUtils.getSysTime());
-        securityService.insertSecurity(security);
-        //先存入数据，然后再把数据读出来返回
-        if (securityService.findById(security.getId()) == null) {
 
-            return RespBean.error("添加失败");
-        } else {
-            return RespBean.error("添加成功");
+    @PostMapping("/securityAdd")
+    public RespBean securityAdd(@RequestBody Security security) {
+        security.setId(IdUtils.getNumberForPK());
+        security.setStatus(0);
+        security.setDescription(security.getDescription());
+        security.setDiscover(UserUtils.getCurrentUser().getName());
+        security.setDiscoverTime(DateUtils.getSysTime());
+        int i = securityService.insertSecurity(security);
+        if (i>0) {
+            return RespBean.ok("发布成功");
         }
+    return RespBean.error("发布失败");
     }
 
     @ApiOperation(value = "根据宿舍id查找安全隐患信息")
@@ -76,8 +77,8 @@ public class SecurityController{
     })
     @GetMapping("/security/selectByRoomId/{roomId}")
     public List<Security> selectByRoomId(@PathVariable("roomId") String roomId, Integer pageNum, Integer pageSize) {
-            PageHelper.startPage(pageNum, pageSize);
-            return securityService.findByRoomId(roomId);
+        PageHelper.startPage(pageNum, pageSize);
+        return securityService.findByRoomId(roomId);
 
     }
 
@@ -90,8 +91,8 @@ public class SecurityController{
     @GetMapping("/security/findByDiscover/{discover}")
     public List<Security> findByDiscover(@PathVariable("discover") String discover, Integer pageNum, Integer pageSize) {
 
-            PageHelper.startPage(pageNum, pageSize);
-            return securityService.findByDiscover(discover);
+        PageHelper.startPage(pageNum, pageSize);
+        return securityService.findByDiscover(discover);
 
     }
 
@@ -106,25 +107,13 @@ public class SecurityController{
     public RespBean status(@PathVariable("status") Integer status, Integer pageNum, Integer pageSize) {
         if (status == 0 || status == 1) {
             PageHelper.startPage(pageNum, pageSize);
-            return RespBean.ok("查询成功",securityService.EventStatus(status));
+            return RespBean.ok("查询成功", securityService.EventStatus(status));
 
         } else {
             return RespBean.error("状态码错误");
         }
     }
 
-    @ApiOperation("导出未处理的安全隐患信息表")
-    @GetMapping("/security/getExcel")
-    public RespBean getExcel(HttpServletRequest request, HttpServletResponse response) {
-        List<Security> securitity = securityService.EventStatus(0);
-        String[] columnNames = {"ID", "描述", "发现人", "处理人", "状态", "发现时间", "房间号"};
-        String fileName = "事件未处理表";
-        ExportExcelWrapper<Security> util = new ExportExcelWrapper<Security>();
-        util.exportExcel(fileName, fileName, columnNames, securitity, response, ExportExcelUtil.EXCEL_FILE_2003);
-
-        return RespBean.ok("下载成功");
-
-    }
 
     /**
      * @return com.hxx.demo.entity.Result
@@ -180,70 +169,7 @@ public class SecurityController{
         if (securityService.findById(security.getId()).getStatus() == 1) {
             return RespBean.ok("处理成功");
         }
-        return  RespBean.ok("处理失败");
+        return RespBean.ok("处理失败");
     }
-    //将没有修好的所有信息生成一个excel表格并下载到本地
-    /*@GetMapping("/security/ExcelDownloads")
-    public void ExcelDownloads(HttpServletResponse response) throws IOException {
-        List<Security> exceldownload = securityService.EventStatus(0);
-        System.out.println("------------"+exceldownload.toString());
-        HSSFWorkbook wb = new HSSFWorkbook();
 
-        HSSFSheet sheet = wb.createSheet("获取excel测试表格");
-
-        HSSFRow row = null;
-
-        row = sheet.createRow(0);//创建第一个单元格
-        row.setHeight((short) (26.25 * 20));
-        row.createCell(0).setCellValue("用户信息列表");//为第一行单元格设值
-
-        *//*为标题设计空间
-     * firstRow从第1行开始
-     * lastRow从第0行结束
-     *
-     *从第1个单元格开始
-     * 从第3个单元格结束
-     *//*
-        CellRangeAddress rowRegion = new CellRangeAddress(0, 0, 0, 2);
-        sheet.addMergedRegion(rowRegion);
-
-      *//*CellRangeAddress columnRegion = new CellRangeAddress(1,4,0,0);
-      sheet.addMergedRegion(columnRegion);*//*
-
-        row = sheet.createRow(1);
-        row.setHeight((short) (22.50 * 20));//设置行高
-        row.createCell(0).setCellValue("Id");//为第一个单元格设值
-        row.createCell(1).setCellValue("description");//为第二个单元格设值
-        row.createCell(2).setCellValue("discover");//为第三个单元格设值
-        row.createCell(3).setCellValue("operator");//为第四个单元格设值
-        row.createCell(4).setCellValue("status");//为第五个单元格设值
-        row.createCell(5).setCellValue("discoverTime");//为第六个单元格设值
-        row.createCell(6).setCellValue("roomId");//为第七个单元格设值
-
-        //遍历所获取的数据
-        for (int i = 0; i < exceldownload.size(); i++) {
-            row = sheet.createRow(i + 2);
-            Security bgm = exceldownload.get(i);
-            row.createCell(0).setCellValue(bgm.getId());
-            row.createCell(1).setCellValue(bgm.getDescription());
-            row.createCell(2).setCellValue(bgm.getDiscover());
-            row.createCell(3).setCellValue(bgm.getOperator());
-            row.createCell(4).setCellValue("未处理");
-            row.createCell(5).setCellValue(bgm.getDiscoverTime());
-            row.createCell(6).setCellValue(bgm.getRoomId());
-        }
-        sheet.setDefaultRowHeight((short) (16.5 * 20));
-
-        //列宽自适应
-        for (int i = 0; i <= 13; i++) {
-            sheet.autoSizeColumn(i);
-        }
-        response.setContentType("application/vnd.ms-excel;charset=utf-8");
-        OutputStream os = response.getOutputStream();
-        response.setHeader("Content-disposition", "attachment;filename=BGM.xls");//默认Excel名称
-        wb.write(os);
-        os.flush();
-        os.close();
-
-    }*/
 }

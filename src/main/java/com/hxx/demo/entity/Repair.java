@@ -1,4 +1,5 @@
 package com.hxx.demo.entity;
+
 import lombok.Data;
 
 /**
@@ -7,6 +8,8 @@ import lombok.Data;
 @Data
 public class Repair {
     private String id;
+
+    private int buildId;
     //宿舍号
     private String roomId;
     //报修描述

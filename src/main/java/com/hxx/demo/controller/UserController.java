@@ -35,7 +35,7 @@ public class UserController {
      * @Date 10:12 2019/10/31
      * @Param [userName]
      **/
-    @ApiOperation(value = "显示个人信息", notes = "显示信息如下")
+    @ApiOperation(value = "个人中心", notes = "显示信息如下")
     @GetMapping(value = "/show")
     @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String")
     public User showSelfInfo() {

@@ -1,8 +1,10 @@
 package com.hxx.demo.service;
 
 import com.hxx.demo.dao.LostDao;
+import com.hxx.demo.entity.GridRequest;
 import com.hxx.demo.entity.Lost;
 import com.hxx.demo.entity.PeriodTime;
+import com.hxx.demo.utils.ParamsInitUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,9 +42,6 @@ public class LostService {
      * @Param [lost]
      **/
     public int insertLost(Lost lost) {
-        if (!lostDao.findBycreateTime(lost.getCreateTime()).isEmpty()) {
-            return -1;
-        }
         return lostDao.insertLost(lost);
     }
 
@@ -111,6 +110,14 @@ public class LostService {
      **/
     public void delBycreateTime(String createTime) {
         lostDao.delBycreateTime(createTime);
+    }
+
+
+    public List<Lost> getGrid(GridRequest gridJson) {
+        ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
+        String sql = paramsInitUtils.initParams(gridJson, "lost");
+        List<Lost> users = this.lostDao.findBykeywords(sql);
+        return users;
     }
 
 }

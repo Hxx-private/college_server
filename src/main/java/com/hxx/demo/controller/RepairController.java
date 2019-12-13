@@ -1,8 +1,7 @@
 package com.hxx.demo.controller;
 
 import com.github.pagehelper.PageHelper;
-import com.hxx.demo.entity.Repair;
-import com.hxx.demo.entity.Result;
+import com.hxx.demo.entity.*;
 import com.hxx.demo.service.RepairService;
 import com.hxx.demo.utils.DateUtils;
 import com.hxx.demo.utils.IdUtils;
@@ -11,9 +10,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +24,7 @@ import java.util.Map;
 
 @Api(value = "报修模块事务控制层")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/repair")
 public class RepairController {
     @Autowired
     private RepairService repairService;
@@ -40,20 +42,20 @@ public class RepairController {
             @ApiImplicitParam(name = "room_id", value = "宿舍号为当前登录用户的宿舍号", required = true, dataType = "String"),
             @ApiImplicitParam(name = "description", value = "报修描述", required = true, dataType = "String")
     })
-    @PostMapping("user/createRepair")
-    public Map<String, Object> createRepair(@RequestBody Repair repair) {
+    @PostMapping("create")
+    public RespBean createRepair(@RequestBody Repair repair) {
         repair.setId(IdUtils.getNumberForPK());
         repair.setApplicant(UserUtils.getCurrentUser().getName());
         repair.setRoomId(UserUtils.getCurrentUser().getRoomId());
         //默认状态为未处理
         repair.setStatus(0);
         repair.setTime(DateUtils.getSysTime());
-        repairService.create(repair);
-        if (null != repairService.findById(repair.getId())) {
+        int i = repairService.create(repair);
+        if (i > 0) {
 
-            return Result.successMap(repair);
+            return RespBean.ok("提交成功", repair);
         }
-        return Result.failMap("提交失败！");
+        return RespBean.error("提交失败");
     }
 
     /**
@@ -68,16 +70,16 @@ public class RepairController {
             @ApiImplicitParam(name = "id", value = "id为当前报修信息表的id", required = true, dataType = "String"),
             @ApiImplicitParam(name = "operator", value = "处理人 为当前登录的维修人员", required = true, dataType = "String"),
     })
-    @PutMapping("user/handle")
-    public Map<String, Object> handleRepair(@RequestBody Repair repair) {
+    @PutMapping("/handle")
+    public RespBean handleRepair(@RequestBody Repair repair) {
         repair.setOperator(UserUtils.getCurrentUser().getName());
         repair.setStatus(1);
         repair.setEndTime(DateUtils.getSysTime());
-        repairService.handleRepair(repair);
-        if (repairService.findById(repair.getId()).getStatus() == 1) {
-            return Result.successMap(repair);
+        int i = repairService.handleRepair(repair);
+        if (i > 0) {
+            return RespBean.ok("处理成功", repair);
         }
-        return Result.failMap("处理失败");
+        return RespBean.error("处理失败");
     }
 
     /**
@@ -87,19 +89,21 @@ public class RepairController {
      * @Date 9:47 2019/10/30
      * @Param []
      **/
-    @ApiOperation(value = "查询所有报修信息")
+    @ApiOperation(value = "报修列表")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
     }
     )
-    @GetMapping("/findAllRepair")
-    public Map<String, Object> findAllRepair(Integer pageNum, Integer pageSize) {
-        if (repairService.findAllRepair().isEmpty()) {
-            return Result.failMap("没有报修信息");
-        }
+    @GetMapping("/rep/list")
+    public RespBean findAllRepair(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
         PageHelper.startPage(pageNum, pageSize);
-        return Result.successMap(repairService.findAllRepair());
+        List<Repair> list = repairService.findAllRepair();
+        int total = list.size();
+        map.put("data", list);
+        map.put("total", total);
+        return RespBean.ok("", map);
     }
 
     /**
@@ -149,20 +153,60 @@ public class RepairController {
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
-     * @Description //TODO 根据宿舍id删除报修信息
+     * @Description //TODO 维修记录
      * @Date 9:03 2019/11/8
      * @Param [roomId]
      **/
-    @ApiOperation("根据宿舍id删除报修信息")
-    @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String")
-    @DeleteMapping("/repair/deleteRepByRid/{roomId}")
-    public Map<String, Object> deleteRepByRid(@PathVariable("roomId") String roomId) {
-        repairService.deleteRepByRid(roomId);
-        if (repairService.findById(roomId) == null) {
-            return Result.successMap("删除成功");
+    @ApiOperation("维修记录")
+    @GetMapping("/rep/record")
+    public RespBean findByStatus(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Repair> list = repairService.findByStatus();
+        int total = list.size();
+        map.put("data", list);
+        map.put("total", total);
+        return RespBean.ok("", map);
+    }
+
+    /**
+     * @return
+     * @Author Hxx
+     * @Description //TODO 根据指定字段查询维修记录
+     * @Date 11:53 2019/12/2
+     * @Param
+     **/
+    @PostMapping(value = "rep/findByKeyWords", consumes = "application/json;charset=UTF-8")
+    public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
+        HttpEntity httpEntity = new HttpEntity();
+        Grid grid = new Grid();
+        List<Repair> list = this.repairService.getGrid(gridJson);
+        int total = list.size();
+        grid.setData(list);
+        grid.setPageIndex(gridJson.getPageIndex());
+        grid.setTotalCount(total);
+        grid.setPageItemCount(grid.getPageItemCount());
+        httpEntity.setData(grid);
+        httpEntity.setStatus(200);
+        return httpEntity;
+    }
+
+    @DeleteMapping("rep/deleteRecord")
+    public RespBean deleteRecord() {
+        int i = repairService.deleteRecord();
+        if (i > 0) {
+            return RespBean.ok("数据已清空");
         }
-        return Result.failMap("删除失败");
+        return RespBean.error("操作失败");
     }
 
 
+    @DeleteMapping("rep/deleteById/{id}")
+    public RespBean deleteById(@PathVariable String id) {
+        int i = repairService.deleteById(id);
+        if (i > 0) {
+            return RespBean.ok("删除成功");
+        }
+        return RespBean.error("删除失败");
+    }
 }

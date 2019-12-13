@@ -93,8 +93,8 @@ public class SanitaryService{
      * @Date 15:03 2019/11/7
      * @Param [user]
      **/
-    public void delBySaroomId(String roomId) {
-        sanitaryDao.delBySaroomId(roomId);
+    public int delBySaroomId(String roomId) {
+        return sanitaryDao.delBySaroomId(roomId);
     }
 
     /**
@@ -109,4 +109,7 @@ public class SanitaryService{
     }
 
 
+    public int update(Sanitary sanitary) {
+        return sanitaryDao.update(sanitary);
+    }
 }

@@ -53,7 +53,7 @@ public interface SanitaryDao {
      * @Param
      **/
 
-    @Select("select * from sanitary from check_time=#{checkTime}")
+    @Select("select * from sanitary where checkTime=#{checkTime}")
     List<Sanitary> findBySaCheckTime(@Param("checkTime") String checkTime);
     /**
      * @return
@@ -63,7 +63,7 @@ public interface SanitaryDao {
      * @Param
      **/
 
-    @Select("select * from sanitary from room_id=#{roomId}")
+    @Select("select * from sanitary where roomId=#{roomId}")
     List<Sanitary> findBySaRoomid(@Param("roomId") String roomId);
 
 
@@ -74,7 +74,7 @@ public interface SanitaryDao {
      * @Date 14:06 2019/11/2
      * @Param []
      **/
-    @Select("SELECT * FROM sanitary WHERE room_id =#{roomId} AND check_time like '%${checkTime}%'")
+    @Select("SELECT * FROM sanitary WHERE roomId =#{roomId} AND checkTime like '%${checkTime}%'")
     List<Sanitary> findRidByCtm(@Param("roomId") String roomId, @Param("checkTime") String checkTime);
 
 
@@ -85,8 +85,8 @@ public interface SanitaryDao {
      * @Date 14:56 2019/11/7
      * @Param [user]
      **/
-    @Delete("delete from sanitary where room_id =#{roomId}")
-    void delBySaroomId(@Param("roomId") String roomId);
+    @Delete("DELETE FROM sanitary WHERE roomId = #{roomId}")
+    int delBySaroomId(@Param("roomId") String roomId);
 
     /**
      * @return void
@@ -95,8 +95,12 @@ public interface SanitaryDao {
      * @Date 15:00 2019/11/7
      * @Param [user]
      **/
-    @Delete("delete  from sanitary where check_time= #{checkTime}")
+    @Delete("delete  from sanitary where checkTime= #{checkTime}")
     void delBycheckTime(@Param("checkTime") String checkTime);
 
 
+
+    @Update("update sanitary set uName=#{sanitary.uName},checkTime=#{sanitary.checkTime},roomId=#{sanitary.roomId}," +
+            "content=#{sanitary.content},grade=#{sanitary.grade},buildId=#{sanitary.buildId} where id = #{sanitary.id}")
+    int update(@Param("sanitary") Sanitary sanitary);
 }

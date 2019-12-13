@@ -12,6 +12,7 @@ import com.hxx.demo.entity.GridRequest;
 import com.hxx.demo.entity.OrderCondition;
 import com.hxx.demo.entity.WhereCondition;
 import com.hxx.demo.entity.entityMenu.WhereConditionMethod;
+import org.springframework.lang.Nullable;
 
 /**
  * @program: college_security
@@ -20,7 +21,7 @@ import com.hxx.demo.entity.entityMenu.WhereConditionMethod;
  * @create: 2019-12-04 11:45
  **/
 public class ParamsInitUtils<T> {
-    public String initParams(GridRequest gridRequest, String tableTitle) {
+    public String initParams(GridRequest gridRequest, @Nullable String tableTitle) {
         //排序条件关键字
         String orderPrefix = "Order By";
         //where语句中AND
@@ -43,8 +44,8 @@ public class ParamsInitUtils<T> {
 
             if( whereCondition.getMethod()==WhereConditionMethod.Like){
                 whereSql += sqlSpace + whereCondition.getField() + sqlSpace + whereCondition.getMethod() + sqlSpace +"\'%"+ whereCondition.getValue() +"%\'"+ whereAND;
-            }else{
-                whereSql += sqlSpace + whereCondition.getField() + sqlSpace + whereCondition.getMethod() + sqlSpace + whereCondition.getValue() + whereAND;
+            }else if(whereCondition.getMethod()==WhereConditionMethod.Equal){
+                whereSql += sqlSpace + whereCondition.getField() + sqlSpace + "=" + sqlSpace +"\'"+ whereCondition.getValue() +"\'"+ whereAND;
             }
         }
         //去除最后的AND

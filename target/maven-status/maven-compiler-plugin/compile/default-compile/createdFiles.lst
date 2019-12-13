@@ -13,7 +13,6 @@ com\hxx\demo\dao\UserDao.class
 com\hxx\demo\mapper\MenuRoleMapper.class
 com\hxx\demo\dao\MenuDao.class
 com\hxx\demo\mapper\SysMsgMapper.class
-com\hxx\demo\utils\ExportExcelWrapper.class
 com\hxx\demo\entity\WhereCondition.class
 com\hxx\demo\config\LoginSuccessHandler.class
 com\hxx\demo\entity\SysMsg.class
@@ -30,8 +29,8 @@ com\hxx\demo\service\SanitaryService.class
 com\hxx\demo\controller\ImageController.class
 com\hxx\demo\entity\OrderCondition.class
 com\hxx\demo\dao\RoomDao.class
+com\hxx\demo\utils\PoiUtils.class
 com\hxx\demo\dao\SanitaryDao.class
-com\hxx\demo\utils\ExportExcelUtil.class
 com\hxx\demo\controller\RepairController.class
 com\hxx\demo\utils\urlCode.class
 com\hxx\demo\config\WebMvcConfig.class

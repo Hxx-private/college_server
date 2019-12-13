@@ -1,6 +1,8 @@
 package com.hxx.demo.controller;
 
 import com.github.pagehelper.PageHelper;
+import com.hxx.demo.entity.HttpEntity;
+import com.hxx.demo.entity.RespBean;
 import com.hxx.demo.entity.Result;
 import com.hxx.demo.entity.Sanitary;
 import com.hxx.demo.service.SanitaryService;
@@ -14,6 +16,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,6 +28,7 @@ import java.util.Map;
 
 @Api(value = "SanitaryController")
 @RestController
+@RequestMapping("/sanitary")
 public class SanitaryController{
     @Autowired
     SanitaryService sanitaryService;
@@ -67,14 +72,16 @@ public class SanitaryController{
             @ApiImplicitParam(name = "pageNum", value = "当前页", dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "每页显示条数", dataType = "Integer")
     })
-    @GetMapping("/sanitary/findAll")
-    public Map<String, Object> sanitaryFindAll(Integer pageNum, Integer pageSize) {
-        if (!sanitaryService.selectAllSanitary().isEmpty()) {
-            //pageNum：当前页数   pageSize：当前页需要显示的数量
-            PageHelper.startPage(pageNum, pageSize);
-            return Result.successMap(sanitaryService.selectAllSanitary());
-        }
-        return Result.failMap("查询失败,请稍后查询");
+    @GetMapping("/findAll")
+    public RespBean sanitaryFindAll(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Sanitary> list = sanitaryService.selectAllSanitary();
+        System.out.println("卫生检查列表:"+list);
+        int total = list.size();
+        map.put("data", list);
+        map.put("total", total);
+        return RespBean.ok("", map);
     }
 
     /**
@@ -129,13 +136,13 @@ public class SanitaryController{
      **/
     @ApiOperation("根据宿舍id删除卫生检查信息")
     @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String")
-    @DeleteMapping("/sanitary/delBySaRoomId/{roomId}")
-    public Map<String, Object> delByRoomId(@PathVariable("roomId") String roomId) {
-        sanitaryService.delBySaroomId(roomId);
-        if (sanitaryService.findBySaRoomid(roomId).isEmpty()) {
-            return Result.successMap("删除成功");
+    @DeleteMapping("delBySaRoomId/{roomId}")
+    public RespBean delByRoomId(@PathVariable("roomId") String roomId) {
+        int i = sanitaryService.delBySaroomId(roomId);
+        if (i > 0) {
+            return RespBean.ok("删除成功");
         }
-        return Result.failMap("删除失败");
+        return RespBean.error("删除失败");
     }
 
     /**
@@ -154,5 +161,18 @@ public class SanitaryController{
             return Result.successMap("删除成功");
         }
         return Result.failMap("删除失败");
+    }
+
+
+    @PostMapping("/update")
+    public RespBean update(@RequestBody Sanitary sanitary){
+        int update = sanitaryService.update(sanitary);
+
+        if (update>0){
+            return RespBean.ok("保存成功");
+        }
+
+        return RespBean.error("保存失败");
+
     }
 }

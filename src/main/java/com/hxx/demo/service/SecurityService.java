@@ -33,8 +33,8 @@ public class SecurityService {
      * @Date 15:38 2019/11/8
      * @Param [security]
      **/
-    public void insertSecurity(Security security) {
-        securityDao.insertSecurity(security);
+    public int insertSecurity(Security security) {
+        return securityDao.insertSecurity(security);
     }
 
     /**

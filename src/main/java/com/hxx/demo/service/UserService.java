@@ -112,8 +112,8 @@ public class UserService implements UserDetailsService {
      * @Date 11:05 2019/11/7
      * @Param [user]
      **/
-    public void createUser(User user) {
-        userDao.createUser(user);
+    public int createUser(User user) {
+        return userDao.createUser(user);
     }
 
     /**

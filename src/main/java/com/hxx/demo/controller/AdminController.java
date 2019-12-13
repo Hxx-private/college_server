@@ -5,10 +5,12 @@ import com.hxx.demo.entity.*;
 import com.hxx.demo.service.UserService;
 import com.hxx.demo.utils.DateUtils;
 import com.hxx.demo.utils.IdUtils;
+import com.hxx.demo.utils.PoiUtils;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +23,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/user")
-public class AdminController  {
+public class AdminController {
     Map<String, Object> map = new HashMap<>();
 
     /**
@@ -33,8 +35,9 @@ public class AdminController  {
      **/
     @Autowired
     private UserService userService;
-    @PostMapping(value = "findByKeyWords",consumes="application/json;charset=UTF-8")
-    public HttpEntity findByKeyWords( @RequestBody GridRequest gridJson) {
+
+    @PostMapping(value = "findByKeyWords", consumes = "application/json;charset=UTF-8")
+    public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
         HttpEntity httpEntity = new HttpEntity();
         Grid grid = new Grid();
         List<User> list = this.userService.getGrid(gridJson);
@@ -47,6 +50,7 @@ public class AdminController  {
         httpEntity.setStatus(200);
         return httpEntity;
     }
+
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
@@ -74,11 +78,11 @@ public class AdminController  {
      * @Date 11:46 2019/11/6
      * @Param [pageNum, pageSize]当前页，默认为1,size 当前每页显示行数，默认为15
      **/
-    @ApiOperation(value = "查询所有用户信息")
+    @ApiOperation(value = "用户列表")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
-    } )
+    })
     @GetMapping("/list")
     public RespBean findAllUser(Integer pageNum, Integer pageSize) {
         //pageNum：当前页数   pageSize：当前页需要显示的数量
@@ -107,7 +111,7 @@ public class AdminController  {
             @ApiImplicitParam(name = "tel", value = "电话", required = true, dataType = "String"),
     }
     )
-    @PostMapping("/createUser")
+    @PostMapping("/add")
     public RespBean createUser(@RequestBody User user) throws Exception {
         //设置工号
         user.setNumber(IdUtils.getNumber());
@@ -120,8 +124,11 @@ public class AdminController  {
         if (userService.loadUserByUsername(user.getUsername()) != null) {
             return RespBean.error("用户名已经存在,请重新输入");
         }
-        userService.createUser(user);
-        return RespBean.ok("添加成功", user);
+        int i = userService.createUser(user);
+        if (i>0){
+            return RespBean.ok("添加成功", user);
+        }
+       return RespBean.error("添加失败");
     }
 
     /**
@@ -146,5 +153,17 @@ public class AdminController  {
             return RespBean.ok("更新成功!");
         }
         return RespBean.error("更新失败!");
+    }
+
+    /**
+     * @return org.springframework.http.ResponseEntity<byte [ ]>
+     * @Author Hxx
+     * @Description //TODO 导出用户信息
+     * @Date 10:46 2019/12/12
+     * @Param []
+     **/
+    @GetMapping(value = "/exportUser")
+    public ResponseEntity<byte[]> exportEmp() {
+        return PoiUtils.exportUserExcel(userService.findAll());
     }
 }

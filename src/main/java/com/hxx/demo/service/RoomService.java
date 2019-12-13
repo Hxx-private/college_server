@@ -26,8 +26,8 @@ public class RoomService {
      * @Date 9:31 2019/11/7
      * @Param [room]
      **/
-    public void addRoom(Room room) {
-        roomDao.addRoom(room);
+    public int addRoom(Room room) {
+        return roomDao.addRoom(room);
     }
 
     /**
@@ -48,11 +48,12 @@ public class RoomService {
      * @Date 9:42 2019/11/7
      * @Param [id]
      **/
-    public void delRoom(String roomId) {
-        roomDao.deltRoom(roomId);
+    public int delRoom(String roomId) {
+        return roomDao.deltRoom(roomId);
     }
-    public void delRoomInfo(String roomId) {
-        roomDao.delRoomInfo(roomId);
+
+    public int delRoomInfo(String roomId) {
+       return roomDao.delRoomInfo(roomId);
     }
 
     /**
@@ -66,11 +67,27 @@ public class RoomService {
         return roomDao.findById(roomId);
     }
 
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 更新宿舍信息
+     * @Date 15:48 2019/12/11
+     * @Param [room]
+     **/
+    public int updateRoom(Room room) {
+        return roomDao.updateRoom(room);
+    }
 
-
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Room>
+     * @Author Hxx
+     * @Description //TODO 根据关键字查找宿舍信息
+     * @Date 16:02 2019/12/11
+     * @Param [gridJson]
+     **/
     public List<Room> getGrid(GridRequest gridJson) {
         ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
-        String sql = paramsInitUtils.initParams(gridJson, "room");
+        String sql = paramsInitUtils.initParams(gridJson, "v_build_room");
         List<Room> rooms = this.roomDao.findBykeywords(sql);
         return rooms;
     }

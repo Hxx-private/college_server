@@ -118,7 +118,7 @@ public interface UserDao {
      * @Param [user]
      **/
     @Insert("INSERT INTO user (userName,name,password,sex,number,tel,type,registerTime) VALUES (#{user.userName},#{user.name},#{user.password},#{user.sex},#{user.number},#{user.tel},#{user.type},#{user.registerTime})")
-    void createUser(@Param("user") User user);
+    int createUser(@Param("user") User user);
 
     /**
      * @return void
@@ -137,7 +137,7 @@ public interface UserDao {
      * @Date 15:00 2019/11/7
      * @Param [user]
      **/
-    @Delete("delete  from user where number= #{number}")
+    @Delete("DELETE  FROM user where number= #{number}")
     void delByNumber(@Param("number") String number);
 
     @Select("SELECT r.* FROM user_role ur,role r where ur.rid=r.id AND ur.userid=#{id}")
@@ -155,4 +155,6 @@ public interface UserDao {
 
     @Select("SELECT * FROM user WHERE CONCAT_WS(`name`,special,depart,roomId,number,userName,sex) LIKE '{keywords}%'")
     List<User>getKeyWords(@Param("keywords") Object keywords );
+    @Delete("")
+    int deleteBatch();
 }

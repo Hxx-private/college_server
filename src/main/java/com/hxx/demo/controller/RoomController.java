@@ -26,6 +26,7 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
     Map<String, Object> map = new HashMap<>();
+
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
@@ -40,15 +41,15 @@ public class RoomController {
             @ApiImplicitParam(name = "num", value = "床位数", required = true, dataType = "String")
     })
     @PostMapping("/addRoom")
-    public Map<String, Object> addRoom(@RequestBody Room room) {
+    public RespBean addRoom(@RequestBody Room room) {
         if (!roomService.findById(room.getRoomId()).isEmpty()) {
-            return Result.failMap("该宿舍信息已经存在,请勿重复添加");
+            return RespBean.error("该宿舍信息已经存在,请勿重复添加");
         } else {
-            roomService.addRoom(room);
-            if (!roomService.findById(room.getRoomId()).isEmpty()) {
-                return Result.successMap(room);
+            int i = roomService.addRoom(room);
+            if (i > 0) {
+                return RespBean.ok("添加成功", room);
             }
-            return Result.failMap("添加失败");
+            return RespBean.error("添加失败");
         }
 
 
@@ -83,16 +84,23 @@ public class RoomController {
     @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String")
     @DeleteMapping("delRoom/{roomId}")
     public RespBean delRoom(@PathVariable("roomId") String roomId) {
-        roomService.delRoom(roomId);
-        roomService.delRoomInfo(roomId);
-        if (roomService.findById(roomId).isEmpty()) {
+        int i = roomService.delRoom(roomId);
+        int j = roomService.delRoomInfo(roomId);
+        if (i > 0 && j > 0) {
             return RespBean.ok("删除成功");
         }
         return RespBean.error("删除失败");
     }
 
-    @PostMapping(value = "findByKeyWords",consumes="application/json;charset=UTF-8")
-    public HttpEntity findByKeyWords( @RequestBody GridRequest gridJson) {
+    /**
+     * @return com.hxx.demo.entity.HttpEntity
+     * @Author Hxx
+     * @Description //TODO 根据指定字段查询宿舍信息
+     * @Date 11:38 2019/12/11
+     * @Param [gridJson]
+     **/
+    @PostMapping(value = "findByKeyWords", consumes = "application/json;charset=UTF-8")
+    public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
         HttpEntity httpEntity = new HttpEntity();
         Grid grid = new Grid();
         List<Room> list = this.roomService.getGrid(gridJson);
@@ -104,6 +112,22 @@ public class RoomController {
         httpEntity.setData(grid);
         httpEntity.setStatus(200);
         return httpEntity;
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 更新宿舍信息
+     * @Date 15:49 2019/12/11
+     * @Param []
+     **/
+    @PostMapping("updateRoom")
+    public RespBean updateRoom(@RequestBody Room room) {
+        int i = roomService.updateRoom(room);
+        if (i > 0) {
+            return RespBean.ok("修改成功");
+        }
+        return RespBean.error("修改失败");
     }
 
 }

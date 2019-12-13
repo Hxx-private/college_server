@@ -97,4 +97,8 @@ public interface LostDao {
      **/
     @Delete("delete  from lost where create_time= #{createTime}")
     void delBycreateTime(@Param("createTime") String createTime);
+
+
+    @Select(" SELECT * FROM lost WHERE  ${sql}")
+    List<Lost> findBykeywords(@Param("sql") String sql);
 }

@@ -26,8 +26,8 @@ public interface SecurityDao{
      * @Date 16:56 2019/11/7
      * @Param [security]
      **/
-    @Insert("insert into security values(#{security.id},#{security.description},#{security.discover},#{security.operator},#{security.status},#{security.discoverTime},#{security.roomId})")
-    void insertSecurity(@Param("security") Security security);
+    @Insert("INSERT INTO security values(#{security.id},#{security.description},#{security.discover},#{security.status},#{security.discoverTime},#{security.roomId})")
+    int insertSecurity(@Param("security") Security security);
 
     /**
      * @return
