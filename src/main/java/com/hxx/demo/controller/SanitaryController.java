@@ -77,8 +77,7 @@ public class SanitaryController{
         Map<String, Object> map = new HashMap<>();
         PageHelper.startPage(pageNum, pageSize);
         List<Sanitary> list = sanitaryService.selectAllSanitary();
-        System.out.println("卫生检查列表:"+list);
-        int total = list.size();
+        int total = sanitaryService.total();
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);

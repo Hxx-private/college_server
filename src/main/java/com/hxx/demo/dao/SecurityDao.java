@@ -107,6 +107,9 @@ public interface SecurityDao{
      * @Date 9:19 2019/11/1
      * @Param [repair]
      **/
-    @Update("UPDATE repair SET status=#{security.status},operateTime=#{operateTime},operator=#{security.operator} WHERE id=#{security.id}")
+    @Update("UPDATE security SET status=#{security.status},operateTime=#{operateTime},operator=#{security.operator} WHERE id=#{security.id}")
     void handleSecurity(@Param("security") Security security);
+
+    @Select("select count(1) from security")
+    int total();
 }

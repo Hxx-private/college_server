@@ -1,6 +1,8 @@
 com\hxx\demo\mapper\UserMapper.class
 com\hxx\demo\CollegeSecurityApplication.class
+com\hxx\demo\service\DepartService.class
 com\hxx\demo\entity\MsgContent.class
+com\hxx\demo\entity\Special.class
 com\hxx\demo\config\UrlAccessDecisionManager.class
 com\hxx\demo\entity\GridRequest.class
 com\hxx\demo\config\AuthenticationAccessDeniedHandler.class
@@ -31,6 +33,7 @@ com\hxx\demo\entity\OrderCondition.class
 com\hxx\demo\dao\RoomDao.class
 com\hxx\demo\utils\PoiUtils.class
 com\hxx\demo\dao\SanitaryDao.class
+com\hxx\demo\entity\Depart.class
 com\hxx\demo\controller\RepairController.class
 com\hxx\demo\utils\urlCode.class
 com\hxx\demo\config\WebMvcConfig.class
@@ -38,6 +41,7 @@ com\hxx\demo\controller\RegLoginController.class
 com\hxx\demo\dao\RepairDao.class
 com\hxx\demo\entity\Grid.class
 com\hxx\demo\service\SecurityService.class
+com\hxx\demo\dao\SpecialDao.class
 com\hxx\demo\entity\Security.class
 com\hxx\demo\entity\Sanitary.class
 com\hxx\demo\config\CustomMetadataSource.class
@@ -51,7 +55,6 @@ com\hxx\demo\dao\LostDao.class
 com\hxx\demo\config\WebSocketConfig.class
 com\hxx\demo\entity\entityMenu\WhereConditionMethod.class
 com\hxx\demo\service\RepairService.class
-com\hxx\demo\service\TokenService.class
 com\hxx\demo\entity\PeriodTime.class
 com\hxx\demo\entity\ChatResp.class
 com\hxx\demo\entity\RespBean.class
@@ -65,11 +68,13 @@ com\hxx\demo\config\SwaggerConfig.class
 com\hxx\demo\dao\SecurityDao.class
 com\hxx\demo\entity\Build.class
 com\hxx\demo\entity\UserRole.class
+com\hxx\demo\dao\DepartDao.class
 com\hxx\demo\entity\HttpEntity.class
 com\hxx\demo\utils\FileUtils.class
 com\hxx\demo\entity\entityMenu\OrderConditionMethod.class
 com\hxx\demo\service\MenuService.class
 com\hxx\demo\controller\RoomController.class
+com\hxx\demo\service\SpecialService.class
 com\hxx\demo\utils\DateUtils.class
 com\hxx\demo\controller\WsController.class
 com\hxx\demo\utils\DateConverter.class

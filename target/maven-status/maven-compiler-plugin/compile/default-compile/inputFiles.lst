@@ -1,9 +1,12 @@
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\controller\ImageController.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\MenuRole.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\OrderCondition.java
+D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\service\SpecialService.java
+D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\dao\SpecialDao.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\mapper\SysMsgMapper.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\controller\UserController.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\config\SwaggerConfig.java
+D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Special.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\service\MenuRoleService.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\controller\LostController.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\config\WebSecurityConfig.java
@@ -19,6 +22,7 @@ D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\service\SanitarySe
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\config\CorsConfig.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\service\UserService.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\utils\DateConverter.java
+D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Depart.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\dao\LostDao.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\entityMenu\OrderConditionMethod.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\utils\UserUtils.java
@@ -53,6 +57,7 @@ D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Grid.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\GridRequest.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\CollegeSecurityApplication.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Role.java
+D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\dao\DepartDao.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Room.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\utils\IdUtils.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\PeriodTime.java
@@ -61,6 +66,7 @@ D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Security.ja
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\dao\MenuDao.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\WhereCondition.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\SysMsg.java
+D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\service\DepartService.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\controller\RegLoginController.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\controller\AdminController.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\UserRole.java
@@ -72,7 +78,6 @@ D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Lost.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\MenuMeta.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\Build.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\mapper\UserMapper.java
-D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\service\TokenService.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\mapper\RoleMapper.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\entity\HttpEntity.java
 D:\IDEA_Workspace\college_security\src\main\java\com\hxx\demo\dao\SanitaryDao.java

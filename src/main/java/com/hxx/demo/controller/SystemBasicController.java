@@ -1,11 +1,7 @@
 package com.hxx.demo.controller;
 
-import com.hxx.demo.entity.Menu;
-import com.hxx.demo.entity.Result;
-import com.hxx.demo.entity.Role;
-import com.hxx.demo.service.MenuRoleService;
-import com.hxx.demo.service.MenuService;
-import com.hxx.demo.service.RoleService;
+import com.hxx.demo.entity.*;
+import com.hxx.demo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +21,10 @@ public class SystemBasicController {
     private MenuService menuService;
     @Autowired
     private MenuRoleService menuRoleService;
-
+    @Autowired
+    private DepartService departService;
+    @Autowired
+    private SpecialService specialService;
 
 
     @DeleteMapping(value = "/role/{rid}")
@@ -67,5 +66,13 @@ public class SystemBasicController {
         return roleService.roles();
     }
 
+    @RequestMapping("/findDepart")
+    public List<Depart> findAll() {
+        return departService.find();
+    }
 
+    @RequestMapping("/findSpecial")
+    public List<Special> findSpecial() {
+        return specialService.find();
+    }
 }

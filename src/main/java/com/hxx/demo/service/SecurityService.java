@@ -128,6 +128,10 @@ public class SecurityService {
         securityDao.handleSecurity(security);
     }
 
+
+    public int total(){
+        return securityDao.total();
+    }
 }
 
 

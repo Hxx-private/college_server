@@ -101,4 +101,8 @@ public interface LostDao {
 
     @Select(" SELECT * FROM lost WHERE  ${sql}")
     List<Lost> findBykeywords(@Param("sql") String sql);
+
+
+    @Select("select count(1) from lost")
+    int total();
 }

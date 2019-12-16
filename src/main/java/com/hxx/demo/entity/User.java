@@ -24,6 +24,7 @@ public class User implements UserDetails {
     private Integer sex;
     private Integer age;
     private String number;
+    private Integer buildId;
     private String roomId;
     private String depart;
     private String special;

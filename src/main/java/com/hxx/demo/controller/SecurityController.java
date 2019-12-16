@@ -41,7 +41,7 @@ public class SecurityController {
         Map<String, Object> map = new HashMap<>();
         PageHelper.startPage(pageNum, pageSize);
         List<Security> list = securityService.findAll();
-        int total = list.size();
+        int total = securityService.total();
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);

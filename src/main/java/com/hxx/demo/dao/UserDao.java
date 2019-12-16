@@ -76,7 +76,7 @@ public interface UserDao {
      * @Date 9:52 2019/10/29
      * @Param []
      **/
-    @Select("SELECT * FROM user")
+    @Select("SELECT * FROM user where userName<> 'sysadmin'")
     List<User> findAll();
 
 
@@ -150,11 +150,10 @@ public interface UserDao {
     })
     User loadUserByUsername(@Param("userName") String userName);
 
-    @Select("SELECT COUNT(*) FROM user")
-    int total();
 
-    @Select("SELECT * FROM user WHERE CONCAT_WS(`name`,special,depart,roomId,number,userName,sex) LIKE '{keywords}%'")
-    List<User>getKeyWords(@Param("keywords") Object keywords );
     @Delete("")
     int deleteBatch();
+
+    @Select("select count(1) from user")
+    int total();
 }

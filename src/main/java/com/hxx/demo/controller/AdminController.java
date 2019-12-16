@@ -64,7 +64,7 @@ public class AdminController {
     public RespBean findByName(String name, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<User> list = userService.findByName(name);
-        int total = userService.total();
+        int total = list.size();
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);
@@ -87,9 +87,9 @@ public class AdminController {
     public RespBean findAllUser(Integer pageNum, Integer pageSize) {
         //pageNum：当前页数   pageSize：当前页需要显示的数量
         PageHelper.startPage(pageNum, pageSize);
-        List<User> userList = userService.findAll();
+        List<User> list = userService.findAll();
         int total = userService.total();
-        map.put("data", userList);
+        map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);
     }
@@ -149,6 +149,7 @@ public class AdminController {
 
     @PostMapping("/updateUser")
     public RespBean updateUser(@RequestBody User user) {
+
         if (userService.updateUser(user) == 1) {
             return RespBean.ok("更新成功!");
         }

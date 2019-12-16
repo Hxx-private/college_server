@@ -66,7 +66,7 @@ public class RoomController {
     public RespBean findAllRoom(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Room> list = roomService.findAll();
-        int total = list.size();
+        int total = roomService.total();
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);

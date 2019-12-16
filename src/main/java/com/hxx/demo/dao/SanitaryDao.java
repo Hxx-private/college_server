@@ -103,4 +103,7 @@ public interface SanitaryDao {
     @Update("update sanitary set uName=#{sanitary.uName},checkTime=#{sanitary.checkTime},roomId=#{sanitary.roomId}," +
             "content=#{sanitary.content},grade=#{sanitary.grade},buildId=#{sanitary.buildId} where id = #{sanitary.id}")
     int update(@Param("sanitary") Sanitary sanitary);
+
+    @Select("select count(1) from sanitary")
+    int total();
 }

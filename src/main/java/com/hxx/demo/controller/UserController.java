@@ -85,14 +85,6 @@ public class UserController {
         return RespBean.error("注册失败!");
     }
 
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Author Hxx
-     * @Description //TODO 创建失物信息帖子
-     * @Date 9:46 2019/10/30
-     * @Param [lost]
-     **/
-
 
     @GetMapping(value = "/roles")
     public List<Role> allRoles() {

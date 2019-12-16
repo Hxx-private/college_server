@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Service
 @Transactional
-public class RepairService{
+public class RepairService {
     @Autowired
     private RepairDao repairDao;
 
@@ -27,7 +27,7 @@ public class RepairService{
      * @Param [repair]
      **/
     public int create(Repair repair) {
-       return repairDao.createRepairForm(repair);
+        return repairDao.createRepairForm(repair);
     }
 
 
@@ -73,7 +73,7 @@ public class RepairService{
      * @Date 10:42 2019/10/31
      * @Param [applicant]
      **/
-    public Repair  getByApplicant(String applicant) {
+    public Repair getByApplicant(String applicant) {
         return repairDao.getByApplicant(applicant);
     }
 
@@ -119,5 +119,21 @@ public class RepairService{
 
     public int deleteById(String id) {
         return repairDao.deleteById(id);
+    }
+
+    /**
+     * @return boolean
+     * @Author Hxx
+     * @Description //TODO 批量删除维修记录
+     * @Date 17:31 2019/12/13
+     * @Param [ids]
+     **/
+    public boolean deleteBatch(String ids) {
+        String[] split = ids.split(",");
+        return repairDao.deleteBatch(split) == split.length;
+    }
+
+    public int total(){
+        return repairDao.total();
     }
 }

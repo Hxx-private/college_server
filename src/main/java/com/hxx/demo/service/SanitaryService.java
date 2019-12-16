@@ -112,4 +112,8 @@ public class SanitaryService{
     public int update(Sanitary sanitary) {
         return sanitaryDao.update(sanitary);
     }
+
+    public int total(){
+        return sanitaryDao.total();
+    }
 }

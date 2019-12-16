@@ -91,4 +91,8 @@ public class RoomService {
         List<Room> rooms = this.roomDao.findBykeywords(sql);
         return rooms;
     }
+
+    public int total(){
+        return roomDao.total();
+    }
 }

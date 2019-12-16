@@ -70,16 +70,18 @@ public class RepairController {
             @ApiImplicitParam(name = "id", value = "id为当前报修信息表的id", required = true, dataType = "String"),
             @ApiImplicitParam(name = "operator", value = "处理人 为当前登录的维修人员", required = true, dataType = "String"),
     })
-    @PutMapping("/handle")
-    public RespBean handleRepair(@RequestBody Repair repair) {
+    @PutMapping("/rep/handle/{id}")
+    public RespBean handleRepair(@PathVariable String id) {
+        Repair repair = new Repair();
+        repair.setId(id);
         repair.setOperator(UserUtils.getCurrentUser().getName());
         repair.setStatus(1);
         repair.setEndTime(DateUtils.getSysTime());
         int i = repairService.handleRepair(repair);
         if (i > 0) {
-            return RespBean.ok("处理成功", repair);
+            return RespBean.ok("维修完成", repair);
         }
-        return RespBean.error("处理失败");
+        return RespBean.error("维修失败");
     }
 
     /**
@@ -181,7 +183,7 @@ public class RepairController {
         HttpEntity httpEntity = new HttpEntity();
         Grid grid = new Grid();
         List<Repair> list = this.repairService.getGrid(gridJson);
-        int total = list.size();
+        int total = repairService.total();
         grid.setData(list);
         grid.setPageIndex(gridJson.getPageIndex());
         grid.setTotalCount(total);
@@ -191,6 +193,13 @@ public class RepairController {
         return httpEntity;
     }
 
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 清空维修记录
+     * @Date 17:05 2019/12/13
+     * @Param []
+     **/
     @DeleteMapping("rep/deleteRecord")
     public RespBean deleteRecord() {
         int i = repairService.deleteRecord();
@@ -200,7 +209,13 @@ public class RepairController {
         return RespBean.error("操作失败");
     }
 
-
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 根据id删除维修记录
+     * @Date 17:33 2019/12/13
+     * @Param [id]
+     **/
     @DeleteMapping("rep/deleteById/{id}")
     public RespBean deleteById(@PathVariable String id) {
         int i = repairService.deleteById(id);
@@ -208,5 +223,20 @@ public class RepairController {
             return RespBean.ok("删除成功");
         }
         return RespBean.error("删除失败");
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 批量删除维修记录
+     * @Date 17:34 2019/12/13
+     * @Param [ids]
+     **/
+    @DeleteMapping("rep/deleteBatch/{ids}")
+    public RespBean deleteBatch(@PathVariable String ids) {
+        if (repairService.deleteBatch(ids)) {
+            return RespBean.ok("删除成功!");
+        }
+        return RespBean.error("删除失败!");
     }
 }

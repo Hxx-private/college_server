@@ -87,7 +87,7 @@ public interface RepairDao {
     /**
      * @return void
      * @Author Hxx
-     * @Description //TODO 根据宿舍id删除报修信息
+     * @Description //TODO 清空维修记录
      * @Date 9:28 2019/11/7
      * @Param [roomId]
      **/
@@ -95,9 +95,18 @@ public interface RepairDao {
     int deleteRecord();
 
 
-    @Select(" SELECT * FROM repair WHERE  ${sql}")
+    @Select(" SELECT * FROM repair WHERE status=0 AND ${sql} ")
     List<Repair> findBykeywords(@Param("sql") String sql);
 
     @Delete("DELETE  FROM repair WHERE id = #{id}")
     int deleteById(@Param("id") String id);
+
+    @Delete("<script>DELETE FROM repair WHERE id IN <foreach collection=\"ids\" separator=\",\" open=\"(\" close=\")\" item=\"id\">\n" +
+            "        #{id}\n" +
+            "    </foreach></script>")
+    int deleteBatch(@Param("ids") String[] ids);
+
+
+    @Select("select count(1) from repair")
+    int total();
 }

@@ -120,4 +120,7 @@ public class LostService {
         return users;
     }
 
+    public int total(){
+        return lostDao.total();
+    }
 }

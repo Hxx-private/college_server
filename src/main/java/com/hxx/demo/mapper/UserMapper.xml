@@ -114,7 +114,7 @@
     </select>
 
     <select id="findBykeywords" resultMap="BaseResultMap">
-        SELECT * FROM user WHERE  ${sql}
+        SELECT * FROM user WHERE userName != 'sysadmin' AND  ${sql}
     </select>
 
 </mapper>

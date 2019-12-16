@@ -60,5 +60,8 @@ public interface RoomDao {
 
     @Update("update room set roomId=#{roomId},num=#{num},remarks=#{remarks}")
     int updateRoom(@Param("room") Room room);
+
+    @Select("select count(1) from room")
+    int total();
 }
 

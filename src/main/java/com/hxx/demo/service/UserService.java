@@ -148,13 +148,13 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-/**
- * @Author Hxx
- * @Description //TODO 用户注册
- * @Date 11:26 2019/11/20
- * @Param [userName, password]
- * @return int
- **/
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 用户注册
+     * @Date 11:26 2019/11/20
+     * @Param [userName, password]
+     **/
     public int userReg(String userName, String password) {
         //如果用户名存在，返回错误
         if (userDao.loadUserByUsername(userName) != null) {
@@ -191,18 +191,20 @@ public class UserService implements UserDetailsService {
     public int deleteUser(Long userId) {
         return userMapper.deleteUser(userId);
     }
+
     public int updateUser(User user) {
         return userMapper.updateUser(user);
     }
 
-    public int total(){
-        return userDao.total();
-    }
 
     public List<User> getGrid(GridRequest gridJson) {
         ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
         String sql = paramsInitUtils.initParams(gridJson, "user");
         List<User> users = this.userMapper.findBykeywords(sql);
         return users;
+    }
+
+    public int total(){
+        return userDao.total();
     }
 }
