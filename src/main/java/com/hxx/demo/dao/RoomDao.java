@@ -58,10 +58,10 @@ public interface RoomDao {
     @Select(" SELECT * FROM v_build_room WHERE  ${sql}")
     List<Room> findBykeywords(@Param("sql") String sql);
 
-    @Update("update room set roomId=#{roomId},num=#{num},remarks=#{remarks}")
+    @Update("UPDATE room SET roomId=#{roomId},num=#{num},remarks=#{remarks}")
     int updateRoom(@Param("room") Room room);
 
-    @Select("select count(1) from room")
+    @Select("SELECT COUNT(1) FROM room")
     int total();
 }
 

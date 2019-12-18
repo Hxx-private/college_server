@@ -2,19 +2,17 @@ package com.hxx.demo.controller;
 
 
 import com.github.pagehelper.PageHelper;
-import com.hxx.demo.entity.RespBean;
-import com.hxx.demo.entity.Security;
+import com.hxx.demo.entity.*;
+import com.hxx.demo.service.SecurityHistoryService;
 import com.hxx.demo.service.SecurityService;
-import com.hxx.demo.utils.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
+import com.hxx.demo.utils.DateUtils;
+import com.hxx.demo.utils.IdUtils;
+import com.hxx.demo.utils.UserUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,19 +22,46 @@ import java.util.Map;
  */
 
 
-@Api(value = "SanitaryController")
 @RestController
 @RequestMapping("/security")
 public class SecurityController {
     @Autowired
     private SecurityService securityService;
+    @Autowired
+    private SecurityHistoryService historyService;
 
-    @ApiOperation(value = "历史检查记录")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "pageNum", value = "当前页", dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "每页显示的条数", dataType = "Integer")
-    })
-    @GetMapping("/findAll")
+
+    /**
+     * @return
+     * @Author Hxx
+     * @Description //TODO 根据指定字段查询隐患信息
+     * @Date 11:53 2019/12/2
+     * @Param
+     **/
+    @PostMapping(value = "sec/findByKeyWords", consumes = "application/json;charset=UTF-8")
+    public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
+        HttpEntity httpEntity = new HttpEntity();
+        Grid grid = new Grid();
+        PageHelper.startPage(gridJson.getPageNum(), gridJson.getPageSize());
+        List<Security> list = this.securityService.getGrid(gridJson);
+        int total = list.size();
+        grid.setData(list);
+        grid.setPageNum(gridJson.getPageNum());
+        grid.setTotal(total);
+        grid.setPageSize(grid.getPageSize());
+        httpEntity.setData(grid);
+        httpEntity.setStatus(200);
+        return httpEntity;
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 隐患列表
+     * @Date 10:01 2019/12/17
+     * @Param [pageNum, pageSize]
+     **/
+    @GetMapping("/sec/list")
     public RespBean findAll(Integer pageNum, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
         PageHelper.startPage(pageNum, pageSize);
@@ -48,128 +73,165 @@ public class SecurityController {
     }
 
 
-    @ApiOperation(value = "发布安全隐患信息")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "description", value = "描述", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "discover", value = "发布人  由前端获取当前登录用户", required = true, dataType = "String")
+    @DeleteMapping("/sec/delById/{id}")
+    public RespBean delById(@PathVariable String id) {
+        int i = securityService.deleteById(id);
+        if (i > 0) {
+            return RespBean.ok("删除成功");
+        }
+        return RespBean.error("删除失败");
+    }
 
-    })
 
-    @PostMapping("/securityAdd")
+    @PostMapping("/sec/update")
+    public RespBean update(@RequestBody Security security) {
+        int i = securityService.update(security);
+        if (i > 0) {
+            return RespBean.ok("修改成功");
+        }
+        return RespBean.error("修改失败");
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 发布安全隐患信息
+     * @Date 10:01 2019/12/17
+     * @Param [security]
+     **/
+    @PostMapping("sec/add")
     public RespBean securityAdd(@RequestBody Security security) {
         security.setId(IdUtils.getNumberForPK());
         security.setStatus(0);
-        security.setDescription(security.getDescription());
+        security.setFlag(0);
+        security.setResult(0);
         security.setDiscover(UserUtils.getCurrentUser().getName());
         security.setDiscoverTime(DateUtils.getSysTime());
         int i = securityService.insertSecurity(security);
-        if (i>0) {
+        int j = historyService.addhistory(security);
+        if (i > 0 && j > 0) {
             return RespBean.ok("发布成功");
         }
-    return RespBean.error("发布失败");
-    }
-
-    @ApiOperation(value = "根据宿舍id查找安全隐患信息")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "pageNum", value = "当前页", dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "每页显示的条数", dataType = "Integer")
-    })
-    @GetMapping("/security/selectByRoomId/{roomId}")
-    public List<Security> selectByRoomId(@PathVariable("roomId") String roomId, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        return securityService.findByRoomId(roomId);
-
-    }
-
-    @ApiOperation(value = "根据发现人查找安全隐患信息")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "discover", value = "发现人", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "pageNum", value = "当前页", dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "每页显示的条数", dataType = "Integer")
-    })
-    @GetMapping("/security/findByDiscover/{discover}")
-    public List<Security> findByDiscover(@PathVariable("discover") String discover, Integer pageNum, Integer pageSize) {
-
-        PageHelper.startPage(pageNum, pageSize);
-        return securityService.findByDiscover(discover);
-
-    }
-
-    @ApiOperation(value = "根据处理状态来查找隐患信息")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "status", value = "处理状态  0:未处理  1：已处理", required = true, dataType = "Integer"),
-            @ApiImplicitParam(name = "pageNum", value = "当前页", dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "每页显示的条数", dataType = "Integer")
-    })
-
-    @GetMapping("/security/status/{status}")
-    public RespBean status(@PathVariable("status") Integer status, Integer pageNum, Integer pageSize) {
-        if (status == 0 || status == 1) {
-            PageHelper.startPage(pageNum, pageSize);
-            return RespBean.ok("查询成功", securityService.EventStatus(status));
-
-        } else {
-            return RespBean.error("状态码错误");
-        }
+        return RespBean.error("发布失败");
     }
 
 
     /**
-     * @return com.hxx.demo.entity.Result
+     * @return com.hxx.demo.entity.RespBean
      * @Author Hxx
-     * @Description //TODO 根据宿舍id删除安全隐患信息
-     * @Date 15:29 2019/11/7
-     * @Param [userName]
+     * @Description //TODO 申请复查列表
+     * @Date 10:17 2019/12/17
+     * @Param [pageNum, pageSize]
      **/
-    @ApiOperation("根据宿舍id来删除安全隐患信息")
-    @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String")
-    @DeleteMapping("/security/delBySeRoomId{roomId}")
-    public RespBean delBySeRoomId(@PathVariable("roomId") String roomId) {
-        securityService.delBySeroomId(roomId);
-        if (securityService.findByRoomId(roomId) == null) {
-            return RespBean.ok("删除成功");
+    @GetMapping("/sec/apply/list")
+    public RespBean findApply(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Security> list = securityService.findApply();
+        List<Security> filterList = new ArrayList<>();
+        for (Security security : list) {
+            if (UserUtils.getCurrentUser().getRoomId().equals(security.getRoomId()) && UserUtils.getCurrentUser().getBuildId().equals(security.getBuildId())) {
+                filterList.add(security);
+            }
         }
-        return RespBean.error("删除失败");
+        if (filterList.size() > 0) {
+            int total = filterList.size();
+            map.put("data", filterList);
+            map.put("total", total);
+            return RespBean.ok("", map);
+        }
+
+        return RespBean.ok("暂无数据");
+
     }
 
-    /**
-     * @return com.hxx.demo.entity.Result
-     * @Author Hxx
-     * @Description //TODO 根据处理时间删除宿舍安全隐患信息
-     * @Date 15:30 2019/11/7
-     * @Param [number]
-     **/
-    @ApiOperation("根据处理时间删除安全隐患信息")
-    @ApiImplicitParam(name = "operateTime", value = "处理时间", required = true, dataType = "String")
-    @DeleteMapping("/delByoperateTime/{operateTime}")
-    public RespBean delByoperateTime(@PathVariable("operateTime") String operateTime) {
-        securityService.delByoperateTime(operateTime);
-        if (securityService.findByOpTime(operateTime).isEmpty()) {
-            return RespBean.ok("删除成功");
-        }
-        return RespBean.error("删除失败");
-    }
 
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
-     * @Description //TODO 处理安全隐患
+     * @Description //TODO 申请复查
      * @Date 15:54 2019/11/8
      * @Param [security]
      **/
-    @ApiOperation(value = "处理安全隐患信息")
-    @ApiImplicitParam(name = "operator", value = "处理人 获取当前登录用户", required = true, dataType = "String")
-    @PutMapping("/security/handleSecurity")
-    public RespBean handleSecurity(@RequestBody Security security) {
-        securityService.findById(security.getId());
+    @ApiOperation(value = "申请复查")
+    @PostMapping("/sec/apply/{id}")
+    public RespBean handleSecurity(@PathVariable String id) {
+        Security security = new Security();
+        security.setId(id);
+        security.setFlag(1);
+        security.setResult(1);
         security.setStatus(1);
+        security.setDiscover(UserUtils.getCurrentUser().getName());
         security.setOperateTime(DateUtils.getSysTime());
-        securityService.handleSecurity(security);
-        if (securityService.findById(security.getId()).getStatus() == 1) {
-            return RespBean.ok("处理成功");
+        int i = securityService.handleSecurity(security);
+        if (i > 0) {
+            return RespBean.ok("申请成功");
         }
-        return RespBean.ok("处理失败");
+        return RespBean.ok("申请失败");
     }
 
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 待复查列表
+     * @Date 11:07 2019/12/17
+     * @Param [pageNum, pageSize]
+     **/
+    @GetMapping("/sec/wait/list")
+    public RespBean find(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Security> list = securityService.findWait();
+        int total = list.size();
+        map.put("data", list);
+        map.put("total", total);
+        return RespBean.ok("", map);
+    }
+
+
+    @GetMapping("/sec/solved/list")
+    public RespBean findSolved(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Security> list = securityService.findSolved();
+        int total = list.size();
+        map.put("data", list);
+        map.put("total", total);
+        return RespBean.ok("", map);
+    }
+
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 历史记录
+     * @Date 9:58 2019/12/17
+     * @Param [pageNum, pageSize]
+     **/
+    @GetMapping("/history/list")
+    public RespBean findhistory(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Security> list = historyService.find();
+        int total = historyService.total();
+        map.put("data", list);
+        map.put("total", total);
+        return RespBean.ok("", map);
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 清空历史记录
+     * @Date 17:05 2019/12/13
+     * @Param []
+     **/
+    @DeleteMapping("history/delete")
+    public RespBean deleteRecord() {
+        int i = historyService.delete();
+        if (i > 0) {
+            return RespBean.ok("数据已清空");
+        }
+        return RespBean.error("操作失败");
+    }
 }

@@ -26,29 +26,6 @@ public class LostService {
     /**
      * @return java.util.List<com.hxx.demo.entity.Lost>
      * @Author Hxx
-     * @Description //TODO 显示所有丢失信息
-     * @Date 9:36 2019/10/30
-     * @Param []
-     **/
-    public List<Lost> findAllLost() {
-        return lostDao.findAllLost();
-    }
-
-    /**
-     * @return void
-     * @Author Hxx
-     * @Description //TODO 创建丢失信息
-     * @Date 9:37 2019/10/30
-     * @Param [lost]
-     **/
-    public int insertLost(Lost lost) {
-        return lostDao.insertLost(lost);
-    }
-
-
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Lost>
-     * @Author Hxx
      * @Description //TODO 根据creater创建人来查询他所发布过的帖子
      * @Date 10:42 2019/10/31
      * @Param [creater]
@@ -120,7 +97,56 @@ public class LostService {
         return users;
     }
 
-    public int total(){
+    public int total() {
         return lostDao.total();
+    }
+
+    /**
+     * 功能描述//TODO 一键删除所有的丢失记录
+     *
+     * @param
+     * @return int
+     * @author Mzx
+     * @date 2019/12/17
+     */
+
+    public int deleteAll() {
+        return lostDao.deleteAll();
+    }
+
+    public List<Lost> findAllHistoryLost() {
+        return lostDao.findAllHistoryLost();
+    }
+
+    public int Historytotal() {
+        return lostDao.HistoryTotal();
+    }
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Lost>
+     * @Author Hxx
+     * @Description //TODO 显示所有丢失信息
+     * @Date 9:36 2019/10/30
+     * @Param []
+     **/
+    public List<Lost> findAllLost() {
+        return lostDao.findAllLost();
+    }
+
+    /**
+     * @return void
+     * @Author Hxx
+     * @Description //TODO 创建丢失信息
+     * @Date 9:37 2019/10/30
+     * @Param [lost]
+     **/
+    public int insertLost(Lost lost) {
+        if (!lostDao.findBycreateTime(lost.getCreateTime()).isEmpty()) {
+            return -1;
+        }
+        if (lostDao.insertLost(lost) != 0 && lostDao.insertLost_History(lost) != 0) {
+            return 1;
+        }
+        return 0;
     }
 }

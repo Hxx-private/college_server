@@ -8,108 +8,91 @@ import java.util.List;
 
 @Mapper
 @Repository
-public interface SecurityDao{
+public interface SecurityDao {
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
      * @Author Hxx
-     * @Description //TODO 显示所有安全隐患信息
+     * @Description //TODO 安全隐患列表
      * @Date 15:40 2019/11/6
      * @Param []
      **/
-    @Select("Select * from security")
+    @Select("SELECT * FROM security WHERE status=0")
     List<Security> findAll();
 
     /**
      * @return void
      * @Author Hxx
-     * @Description //TODO 创建安全隐患信息
+     * @Description //TODO 发布安全隐患信息
      * @Date 16:56 2019/11/7
      * @Param [security]
      **/
-    @Insert("INSERT INTO security values(#{security.id},#{security.description},#{security.discover},#{security.status},#{security.discoverTime},#{security.roomId})")
+    @Insert("INSERT INTO security (id,buildId,roomId,description,discover,discoverTime,status,flag)VALUES(#{security.id},#{security.buildId},#{security.roomId},#{security.description},#{security.discover},#{security.discoverTime},#{security.status},#{security.flag})")
     int insertSecurity(@Param("security") Security security);
 
     /**
-     * @return
+     * @return int
      * @Author Hxx
-     * @Description // TODO 根据id查询隐患信息
-     * @Date 16:43 2019/11/7
-     * @Param
+     * @Description //TODO 根据id删除
+     * @Date 11:35 2019/12/17
+     * @Param [id]
      **/
-    @Select("select * from security where id = #{id}")
-    Security findById(@Param("id") String id);
+    @Delete("DELETE FROM security WHERE id=#{id}")
+    int deleteById(@Param("id") String id);
 
     /**
-     * @return
+     * @return int
      * @Author Hxx
-     * @Description // TODO 根据房间号查信息
-     * @Date 16:43 2019/11/7
-     * @Param
+     * @Description //TODO 编辑隐患信息
+     * @Date 14:19 2019/12/17
+     * @Param [security]
      **/
-    @Select("select * from security where roomId = #{roomId}")
-    List<Security> findByRoomId(@Param("roomId") String roomId);
-
-    /**
-     * @return
-     * @Author Hxx
-     * @Description //TODO 根据发现人来查询
-     * @Date 16:43 2019/11/7
-     * @Param
-     **/
-    @Select("select * from security where discover = #{discover}")
-    List<Security> findByDiscover(@Param("discover") String discover);
-
-    /**
-     * @return
-     * @Author Hxx
-     * @Description //TODO 查询status=0，也就是未处理的报修事件;status=1,处理完的事件
-     * @Date 14:47 2019/11/7
-     * @Param
-     **/
-    @Select("select * from security where status=#{status}")
-    List<Security> EventStatus(@Param("status") Integer status);
+    @Update("UPDATE security SET buildId=#{security.buildId},roomId=#{security.roomId},description=#{security.description},discoverTime=#{security.discoverTime} where id = #{security.id}")
+    int update(@Param("security") Security security);
 
     /**
      * @return void
      * @Author Hxx
-     * @Description //TODO 根据宿舍id来删除安全隐患信息
-     * @Date 14:56 2019/11/7
-     * @Param [user]
+     * @Description //TODO 申请复查
+     * @Date 9:19 2019/11/1
+     * @Param [repair]
      **/
-    @Delete("delete from security where roomId =#{roomId}")
-    void delBySeroomId(@Param("roomId") String roomId);
-
-    /**
-     * @return void
-     * @Author Hxx
-     * @Description //TODO 根据处理时间来删除安全隐患信息
-     * @Date 15:00 2019/11/7
-     * @Param [user]
-     **/
-    @Delete("delete  from security where operateTime= #{operateTime}")
-    void delByoperateTime(@Param("operateTime") String operateTime);
+    @Update("UPDATE security SET status=#{security.status},flag=#{security.flag},result=#{security.result},operateTime=#{security.operateTime},operator=#{security.operator} WHERE id=#{security.id}")
+    int handleSecurity(@Param("security") Security security);
 
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
      * @Author Hxx
-     * @Description //TODO 根据处理时间来查询安全隐患信息
-     * @Date 17:35 2019/11/7
-     * @Param [operateTime]
+     * @Description //TODO 申请复查
+     * @Date 10:38 2019/12/17
+     * @Param []
      **/
-    @Select("select * from security where operateTime=#{operateTime}")
-    List<Security> findByOperTime(@Param("operateTime") String operateTime);
-
+    @Select("SELECT * FROM security where result <> 2")
+    List<Security> findApply();
 
     /**
-     * @return void
+     * @return java.util.List<com.hxx.demo.entity.Security>
      * @Author Hxx
-     * @Description //TODO 处理安全隐患信息
-     * @Date 9:19 2019/11/1
-     * @Param [repair]
+     * @Description //TODO 待复查列表
+     * @Date 10:38 2019/12/17
+     * @Param []
      **/
-    @Update("UPDATE security SET status=#{security.status},operateTime=#{operateTime},operator=#{security.operator} WHERE id=#{security.id}")
-    void handleSecurity(@Param("security") Security security);
+    @Select("SELECT * FROM security where status=1 and flag =1 and result=1")
+    List<Security> findWait();
 
-    @Select("select count(1) from security")
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Security>
+     * @Author Hxx
+     * @Description //TODO 已处理列表
+     * @Date 10:38 2019/12/17
+     * @Param []
+     **/
+    @Select("SELECT * FROM security WHERE status=1 AND flag =1 AND result=2")
+    List<Security> findSolved();
+
+
+    @Select("SELECT COUNT(1) FROM security")
     int total();
+
+    @Select(" SELECT * FROM security WHERE status=0 AND flag=0 AND ${sql} ")
+    List<Security> findBykeywords(@Param("sql") String sql);
 }

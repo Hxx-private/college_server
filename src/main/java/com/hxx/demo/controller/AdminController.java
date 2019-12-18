@@ -40,12 +40,13 @@ public class AdminController {
     public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
         HttpEntity httpEntity = new HttpEntity();
         Grid grid = new Grid();
+        PageHelper.startPage(gridJson.getPageNum(),gridJson.getPageSize());
         List<User> list = this.userService.getGrid(gridJson);
         int total = list.size();
         grid.setData(list);
-        grid.setPageIndex(gridJson.getPageIndex());
-        grid.setTotalCount(total);
-        grid.setPageItemCount(grid.getPageItemCount());
+        grid.setPageNum(gridJson.getPageNum());
+        grid.setTotal(total);
+        grid.setPageSize(gridJson.getPageSize());
         httpEntity.setData(grid);
         httpEntity.setStatus(200);
         return httpEntity;
@@ -68,7 +69,6 @@ public class AdminController {
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);
-
     }
 
     /**
@@ -102,33 +102,23 @@ public class AdminController {
      * @Date 16:55 2019/11/8
      * @Param [user]
      **/
-    @ApiOperation(value = "添加管理员")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "user_name", value = "用户名", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "name", value = "真实姓名", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "sex", value = "性别", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "tel", value = "电话", required = true, dataType = "String"),
-    }
-    )
-    @PostMapping("/add")
+    @ApiOperation(value = "添加维修人员和宿管")
+    @PostMapping("/createUser")
     public RespBean createUser(@RequestBody User user) throws Exception {
         //设置工号
         user.setNumber(IdUtils.getNumber());
-        //设置密码
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String encode = encoder.encode(user.getPassword());
-        user.setPassword(encode);
-        //设置添加时间
+        //默认密码为1234
+        user.setPassword(new BCryptPasswordEncoder().encode("1234").trim());
         user.setRegisterTime(DateUtils.getSysTime());
+        user.setEnabled(true);
         if (userService.loadUserByUsername(user.getUsername()) != null) {
             return RespBean.error("用户名已经存在,请重新输入");
         }
         int i = userService.createUser(user);
-        if (i>0){
+        if (i > 0) {
             return RespBean.ok("添加成功", user);
         }
-       return RespBean.error("添加失败");
+        return RespBean.error("添加失败");
     }
 
     /**

@@ -110,6 +110,13 @@ public class RepairService {
         repairDao.deleteRepair(applicant);
     }
 
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Repair>
+     * @Author Hxx
+     * @Description //TODO 根据指定字段查询报修信息
+     * @Date 16:04 2019/12/17
+     * @Param [gridJson]
+     **/
     public List<Repair> getGrid(GridRequest gridJson) {
         ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
         String sql = paramsInitUtils.initParams(gridJson, "repair");
@@ -133,7 +140,7 @@ public class RepairService {
         return repairDao.deleteBatch(split) == split.length;
     }
 
-    public int total(){
+    public int total() {
         return repairDao.total();
     }
 }

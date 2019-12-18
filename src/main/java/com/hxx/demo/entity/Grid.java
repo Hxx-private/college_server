@@ -1,36 +1,36 @@
 package com.hxx.demo.entity;
 
 public class Grid {
-    private int pageIndex;
-    private long pageItemCount;
-    private long totalCount;
+    private int pageNum;
+    private long pageSize;
+    private long total;
     private Object data;
 
     public Grid() {
     }
 
-    public int getPageIndex() {
-        return this.pageIndex;
+    public int getPageNum() {
+        return this.pageNum;
     }
 
-    public void setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex;
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
     }
 
-    public long getPageItemCount() {
-        return this.pageItemCount;
+    public long getPageSize() {
+        return this.pageSize;
     }
 
-    public void setPageItemCount(long pageItemCount) {
-        this.pageItemCount = pageItemCount;
+    public void setPageSize(long pageSize) {
+        this.pageSize = pageSize;
     }
 
-    public long getTotalCount() {
-        return this.totalCount;
+    public long getTotal() {
+        return this.total;
     }
 
-    public void setTotalCount(long totalCount) {
-        this.totalCount = totalCount;
+    public void setTotal(long total) {
+        this.total = total;
     }
 
     public Object getData() {

@@ -52,6 +52,7 @@ com\hxx\demo\entity\User.class
 com\hxx\demo\mapper\MenuMapper.class
 com\hxx\demo\service\UserService.class
 com\hxx\demo\dao\LostDao.class
+com\hxx\demo\dao\SecurityHistoryDao.class
 com\hxx\demo\config\WebSocketConfig.class
 com\hxx\demo\entity\entityMenu\WhereConditionMethod.class
 com\hxx\demo\service\RepairService.class
@@ -64,7 +65,6 @@ com\hxx\demo\controller\LostController.class
 com\hxx\demo\dao\RoleDao.class
 com\hxx\demo\entity\MenuRole.class
 com\hxx\demo\config\WebSecurityConfig.class
-com\hxx\demo\config\SwaggerConfig.class
 com\hxx\demo\dao\SecurityDao.class
 com\hxx\demo\entity\Build.class
 com\hxx\demo\entity\UserRole.class
@@ -74,6 +74,7 @@ com\hxx\demo\utils\FileUtils.class
 com\hxx\demo\entity\entityMenu\OrderConditionMethod.class
 com\hxx\demo\service\MenuService.class
 com\hxx\demo\controller\RoomController.class
+com\hxx\demo\service\SecurityHistoryService.class
 com\hxx\demo\service\SpecialService.class
 com\hxx\demo\utils\DateUtils.class
 com\hxx\demo\controller\WsController.class

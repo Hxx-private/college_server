@@ -1,7 +1,9 @@
 package com.hxx.demo.service;
 
 import com.hxx.demo.dao.SecurityDao;
+import com.hxx.demo.entity.GridRequest;
 import com.hxx.demo.entity.Security;
+import com.hxx.demo.utils.ParamsInitUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,18 +20,29 @@ public class SecurityService {
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
      * @Author Hxx
-     * @Description //TODO 查询所有安全隐患信息
+     * @Description //TODO 隐患列表
      * @Date 15:38 2019/11/8
      * @Param []
      **/
-    public List<Security>  findAll() {
+    public List<Security> findAll() {
         return securityDao.findAll();
+    }
+
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 根据id删除
+     * @Date 11:25 2019/12/17
+     * @Param [id]
+     **/
+    public int deleteById(String id) {
+        return securityDao.deleteById(id);
     }
 
     /**
      * @return void
      * @Author Hxx
-     * @Description //TODO 安全隐患信息检查结果发布
+     * @Description //TODO 发布
      * @Date 15:38 2019/11/8
      * @Param [security]
      **/
@@ -38,99 +51,63 @@ public class SecurityService {
     }
 
     /**
-     * @return java.util.List<com.hxx.demo.entity.Security>
-     * @Author Hxx
-     * @Description //TODO 根据id查找隐患信息
-     * @Date 15:39 2019/11/8
-     * @Param [id]
-     **/
-    public Security findById(String id) {
-
-        return securityDao.findById(id);
-    }
-
-
-
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Security>
-     * @Author Hxx
-     * @Description //TODO 根据宿舍id查找检查结果
-     * @Date 15:39 2019/11/8
-     * @Param [roomId]
-     **/
-    public List<Security> findByRoomId(String roomId) {
-        return securityDao.findByRoomId(roomId);
-    }
-
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Security>
-     * @Author Hxx
-     * @Description //TODO 根据发现人查看安全隐患信息
-     * @Date 15:40 2019/11/8
-     * @Param [discover]
-     **/
-    public List<Security> findByDiscover(String discover) {
-        return securityDao.findByDiscover(discover);
-    }
-
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Security>
-     * @Author Hxx
-     * @Description //TODO 根据处理状态来查询隐患信息
-     * @Date 15:41 2019/11/8
-     * @Param [status]
-     **/
-    public List<Security> EventStatus(Integer status) {
-        return securityDao.EventStatus(status);
-    }
-
-    /**
      * @return void
      * @Author Hxx
-     * @Description //TODO 根据宿舍id删除安全隐患信息
-     * @Date 15:03 2019/11/7
-     * @Param [user]
-     **/
-    public void delBySeroomId(String roomId) {
-        securityDao.delBySeroomId(roomId);
-    }
-
-    /**
-     * @return void
-     * @Author Hxx
-     * @Description //TODO 根据处理时间删除安全隐患信息
-     * @Date 15:03 2019/11/7
-     * @Param [user]
-     **/
-    public void delByoperateTime(String operateTime) {
-        securityDao.delByoperateTime(operateTime);
-    }
-
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Security>
-     * @Author Hxx
-     * @Description //TODO 根据处理时间来查询安全隐患信息
-     * @Date 17:36 2019/11/7
-     * @Param [operateTime]
-     **/
-    public List<Security> findByOpTime(String operateTime) {
-        return securityDao.findByOperTime(operateTime);
-    }
-
-    /**
-     * @return void
-     * @Author Hxx
-     * @Description //TODO 处理安全隐患信息
+     * @Description //TODO 处理安全隐患
      * @Date 10:13 2019/11/1
      * @Param [repair]
      **/
-    public void handleSecurity(Security security) {
-        securityDao.handleSecurity(security);
+    public int handleSecurity(Security security) {
+        return securityDao.handleSecurity(security);
+    }
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Security>
+     * @Author Hxx
+     * @Description //TODO 申请复查
+     * @Date 10:41 2019/12/17
+     * @Param []
+     **/
+    public List<Security> findApply() {
+        return securityDao.findApply();
+    }
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Security>
+     * @Author Hxx
+     * @Description //TODO 待复查
+     * @Date 10:42 2019/12/17
+     * @Param []
+     **/
+    public List<Security> findWait() {
+        return securityDao.findWait();
+    }
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Security>
+     * @Author Hxx
+     * @Description //TODO 已处理
+     * @Date 10:45 2019/12/17
+     * @Param []
+     **/
+    public List<Security> findSolved() {
+        return securityDao.findSolved();
+    }
+
+    public int update(Security security) {
+
+        return securityDao.update(security);
+    }
+    public int total() {
+        return securityDao.total();
     }
 
 
-    public int total(){
-        return securityDao.total();
+    public List<Security> getGrid(GridRequest gridJson) {
+        ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
+        String sql = paramsInitUtils.initParams(gridJson, "security");
+        List<Security> securitys = this.securityDao.findBykeywords(sql);
+        return securitys;
     }
 }
 

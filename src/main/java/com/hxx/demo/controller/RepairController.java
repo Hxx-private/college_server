@@ -182,12 +182,13 @@ public class RepairController {
     public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
         HttpEntity httpEntity = new HttpEntity();
         Grid grid = new Grid();
+        PageHelper.startPage(gridJson.getPageNum(),gridJson.getPageSize());
         List<Repair> list = this.repairService.getGrid(gridJson);
         int total = repairService.total();
         grid.setData(list);
-        grid.setPageIndex(gridJson.getPageIndex());
-        grid.setTotalCount(total);
-        grid.setPageItemCount(grid.getPageItemCount());
+        grid.setPageNum(gridJson.getPageNum());
+        grid.setTotal(total);
+        grid.setPageSize(grid.getPageSize());
         httpEntity.setData(grid);
         httpEntity.setStatus(200);
         return httpEntity;

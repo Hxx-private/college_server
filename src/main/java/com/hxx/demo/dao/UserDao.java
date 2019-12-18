@@ -117,7 +117,7 @@ public interface UserDao {
      * @Date 11:01 2019/11/7
      * @Param [user]
      **/
-    @Insert("INSERT INTO user (userName,name,password,sex,number,tel,type,registerTime) VALUES (#{user.userName},#{user.name},#{user.password},#{user.sex},#{user.number},#{user.tel},#{user.type},#{user.registerTime})")
+    @Insert("INSERT INTO user (userName,name,password,sex,number,tel,registerTime,enabled) VALUES (#{user.userName},#{user.name},#{user.password},#{user.sex},#{user.number},#{user.tel},#{user.enabled},#{user.registerTime})")
     int createUser(@Param("user") User user);
 
     /**

@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.util.AntPathMatcher;
 
 import java.io.PrintWriter;
 
@@ -46,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/index.html", "/static/**", "/login_p", "/favicon.ico","/swagger-ui.html","/swagger-resources/configuration/ui","/swagger-resources","/swagger-resources/configuration/security","/v2/api-docs");
+        web.ignoring().antMatchers("/index.html", "/createUser", "/static/**", "/login_p", "/favicon.ico");
     }
 
     @Override
@@ -112,5 +113,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and().csrf().disable()
                 .exceptionHandling().accessDeniedHandler(deniedHandler);
+
     }
 }

@@ -35,7 +35,7 @@ public interface LostDao {
      * @Param [lost]
      **/
     @Insert("INSERT INTO lost VALUES(#{lost.id},  #{lost.content},#{lost.creater},#{lost.createTime})")
-   int insertLost(@Param("lost") Lost lost);
+    int insertLost(@Param("lost") Lost lost);
 
 
     /**
@@ -105,4 +105,17 @@ public interface LostDao {
 
     @Select("select count(1) from lost")
     int total();
+
+    @Select("SELECT COUNT(*) FROM lost_history")
+    int HistoryTotal();
+
+    @Select("SELECT * FROM lost_history")
+    List<Lost> findAllHistoryLost();
+
+    @Delete("DELETE from lost_history")
+    int deleteAll();
+
+    @Insert("INSERT INTO lost_history VALUES(#{lost.id},  #{lost.content},#{lost.creater},#{lost.createTime})")
+    int insertLost_History(@Param("lost") Lost lost);
 }
+

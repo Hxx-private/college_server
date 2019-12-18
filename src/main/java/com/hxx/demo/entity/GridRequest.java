@@ -5,28 +5,28 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 public class GridRequest {
-    private int pageIndex;
-    private int pageItemCount;
+    private int pageNum;
+    private int pageSize;
     private List<WhereCondition> whereConditions = Lists.newArrayList();
     private List<OrderCondition> orderConditions = Lists.newArrayList();
 
     public GridRequest() {
     }
 
-    public int getPageIndex() {
-        return this.pageIndex;
+    public int getPageNum() {
+        return this.pageNum;
     }
 
-    public void setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex;
+    public void setPageNum(int pageIndex) {
+        this.pageNum = pageNum;
     }
 
-    public int getPageItemCount() {
-        return this.pageItemCount;
+    public int getPageSize() {
+        return this.pageSize;
     }
 
     public void setPageItemCount(int pageItemCount) {
-        this.pageItemCount = pageItemCount;
+        this.pageSize = pageSize;
     }
 
     public List<WhereCondition> getWhereConditions() {
