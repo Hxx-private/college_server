@@ -194,18 +194,26 @@ public class LostController {
      */
     @GetMapping("/los/findAllHistoryLost")
     public RespBean findAllHistoryLost(Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<Lost> list = lostService.findAllHistoryLost();
+        List<Lost> losts = lostService.findAllHistoryLost();
         List<Lost> filterList = new ArrayList<>();
-        for (Lost lost : list) {
+        int num = 0;
+        for (Lost lost : losts) {
             if (UserUtils.getCurrentUser().getName().equals(lost.getCreater())) {
                 filterList.add(lost);
+                num++;
             }
         }
-
-        if (filterList.size() > 0) {
-            int total = filterList.size();
-            map.put("data", filterList);
+        PageHelper.startPage(pageNum, pageSize);
+        List<Lost> list = lostService.findAllHistoryLost();
+        List<Lost> filterLists = new ArrayList<>();
+        for (Lost lost : list) {
+            if (UserUtils.getCurrentUser().getName().equals(lost.getCreater())) {
+                filterLists.add(lost);
+            }
+        }
+        if (filterLists.size() > 0) {
+            int total = num;
+            map.put("data", filterLists);
             map.put("total", total);
             return RespBean.ok("", map);
         }

@@ -49,21 +49,17 @@ public class UserController {
      * @Date 16:49 2019/10/30
      * @Param [user]
      **/
-    @ApiOperation(value = "用户修改资料", notes = "用户登录之后才可以修改资料")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "userName", value = "用户名", dataType = "String"),
-            @ApiImplicitParam(name = "sex", value = "性别 0:女  1：男", dataType = "Integer"),
-            @ApiImplicitParam(name = "age", value = "年龄", dataType = "String"),
-            @ApiImplicitParam(name = "tel", value = "联系电话 前端限制为 11位", dataType = "String"),
-
-    })
     @PutMapping(value = "/alter")
     public RespBean alterUser(@RequestBody User user) {
-        if (userService.loadUserByUsername(user.getUsername()) != null) {
-            userService.alterUser(user);
-            return RespBean.ok("修改成功");
+        if (null!=userService.findByUserName(user.getUsername(),user.getId())){
+            int i = userService.alterUser(user);
+            if (i > 0) {
+                return RespBean.ok("修改成功");
+            }
+            return RespBean.error("修改失败");
         }
-        return RespBean.error("修改失败");
+
+       return RespBean.error("用户名存在");
     }
 
     /**

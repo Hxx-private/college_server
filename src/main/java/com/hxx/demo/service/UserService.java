@@ -34,8 +34,8 @@ public class UserService implements UserDetailsService {
      * @Date 17:05 2019/10/28
      * @Param [userName]
      **/
-    public User findByUsername(String userName) {
-        return userDao.findByUserName(userName);
+    public User findByUsername(String userName,long id) {
+        return userDao.findByUserName(userName,id);
     }
 
     /**
@@ -78,8 +78,8 @@ public class UserService implements UserDetailsService {
      * @Date 16:34 2019/10/30
      * @Param [user]
      **/
-    public void alterUser(User user) {
-        userDao.alterUser(user);
+    public int alterUser(User user) {
+       return userDao.alterUser(user);
     }
 
     /**
@@ -123,20 +123,10 @@ public class UserService implements UserDetailsService {
      * @Date 15:03 2019/11/7
      * @Param [id]
      **/
-    public void delByUserName(String userName) {
-        userDao.delByUserName(userName);
+    public int delByUserName(String userName) {
+       return userDao.delByUserName(userName);
     }
 
-    /**
-     * @return void
-     * @Author Hxx
-     * @Description //TODO 根据学号或工号删除用户信息
-     * @Date 15:03 2019/11/7
-     * @Param [user]
-     **/
-    public void delByNumber(String number) {
-        userDao.delByNumber(number);
-    }
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
@@ -206,5 +196,9 @@ public class UserService implements UserDetailsService {
 
     public int total(){
         return userDao.total();
+    }
+
+    public User findByUserName(String username,long id) {
+        return userDao.findByUserName(username,id);
     }
 }

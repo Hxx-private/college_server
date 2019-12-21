@@ -15,7 +15,8 @@ public interface SecurityHistoryDao {
      * @Param [securityHistory]
      *
      **/
-    @Insert("INSERT INTO security_history(id,buildId,roomId,description,discover,discoverTime,status,flag) values(#{securityHistory.id},#{securityHistory.buildId},#{securityHistory.roomId},#{securityHistory.description},#{securityHistory.discover},#{securityHistory.discoverTime},#{securityHistory.status},#{securityHistory.flag})")
+
+    @Insert("INSERT INTO security_history(id,buildId,roomId,description,discover,discoverTime,operator,operateTime,checker,checkTime,status,flag,result) values(#{securityHistory.id},#{securityHistory.buildId},#{securityHistory.roomId},#{securityHistory.description},#{securityHistory.discover},#{securityHistory.discoverTime},#{securityHistory.operator},#{securityHistory.operateTime},#{securityHistory.checker},#{securityHistory.checkTime},#{securityHistory.status},#{securityHistory.flag},#{securityHistory.result})")
     int addhistory(@Param("securityHistory") Security securityHistory);
 
     @Select("SELECT * FROM security_history")
@@ -24,10 +25,8 @@ public interface SecurityHistoryDao {
     @Select("SELECT COUNT(1) FROM security_history")
     int total();
 
-    @Delete("DELETE * FROM security_history")
+    @Delete("DELETE  FROM security_history")
     int delete();
 
 
-//    operator,operateTime,
-//    #{securityHistory.operator},#{securityHistory.operateTime},
 }

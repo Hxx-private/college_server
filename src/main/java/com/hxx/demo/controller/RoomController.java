@@ -34,19 +34,16 @@ public class RoomController {
      * @Date 9:46 2019/10/30
      * @Param [lost]
      **/
-    @ApiOperation(value = "添加宿舍信息", notes = "根据room对象来添加")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "remarks", value = "备注", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "num", value = "床位数", required = true, dataType = "String")
-    })
     @PostMapping("/addRoom")
     public RespBean addRoom(@RequestBody Room room) {
-        if (!roomService.findById(room.getRoomId()).isEmpty()) {
+
+        if (null!=roomService.findById(room.getBuildId(),room.getRoomId())) {
             return RespBean.error("该宿舍信息已经存在,请勿重复添加");
         } else {
             int i = roomService.addRoom(room);
-            if (i > 0) {
+            int j = roomService.addBuild(room.getBuildId());
+            int k = roomService.addInfo(room.getBuildId(),room.getRoomId());
+            if (i > 0 && j > 0&&k>0) {
                 return RespBean.ok("添加成功", room);
             }
             return RespBean.error("添加失败");
@@ -81,7 +78,6 @@ public class RoomController {
      * @Param [lost]
      **/
     @ApiOperation(value = "删除宿舍信息", notes = "根据id来删除")
-    @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String")
     @DeleteMapping("delRoom/{roomId}")
     public RespBean delRoom(@PathVariable("roomId") String roomId) {
         int i = roomService.delRoom(roomId);
@@ -103,7 +99,7 @@ public class RoomController {
     public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
         HttpEntity httpEntity = new HttpEntity();
         Grid grid = new Grid();
-        PageHelper.startPage(gridJson.getPageNum(),gridJson.getPageSize());
+        PageHelper.startPage(gridJson.getPageNum(), gridJson.getPageSize());
         List<Room> list = this.roomService.getGrid(gridJson);
         int total = list.size();
         grid.setData(list);

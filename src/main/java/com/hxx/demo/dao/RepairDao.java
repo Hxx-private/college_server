@@ -18,7 +18,7 @@ public interface RepairDao {
      * @Param [repair]
      **/
 
-    @Insert("INSERT INTO repair (id,roomId,description,applicant,status,time) VALUES (#{repair.id},#{repair.roomId},#{repair.description},#{repair.applicant},#{repair.status},#{repair.time})")
+    @Insert("INSERT INTO repair (id,buildId,roomId,description,applicant,status,time) VALUES (#{repair.id},#{repair.buildId},#{repair.roomId},#{repair.description},#{repair.applicant},#{repair.status},#{repair.time})")
     int createRepairForm(@Param("repair") Repair repair);
 
     /**
@@ -35,7 +35,7 @@ public interface RepairDao {
     /**
      * @return com.hxx.demo.entity.User
      * @Author Hxx
-     * @Description //TODO 根据status查找报修信息
+     * @Description //TODO 维修记录
      * @Date 15:10 2019/10/28
      * @Param [status]
      **/
@@ -51,6 +51,8 @@ public interface RepairDao {
      **/
     @Select("SELECT * FROM repair WHERE status =0")
     List<Repair> findAllRepair();
+
+
 
 
     /**
@@ -106,6 +108,9 @@ public interface RepairDao {
             "    </foreach></script>")
     int deleteBatch(@Param("ids") String[] ids);
 
+
+    @Update("UPDATE repair SET buildId=#{repair.buildId},roomId=#{repair.roomId},description=#{repair.description},time=#{repair.time} WHERE id=#{repair.id}")
+    int update(@Param("repair") Repair repair);
 
     @Select("select count(1) from repair")
     int total();

@@ -26,7 +26,7 @@ public interface SecurityDao {
      * @Date 16:56 2019/11/7
      * @Param [security]
      **/
-    @Insert("INSERT INTO security (id,buildId,roomId,description,discover,discoverTime,status,flag)VALUES(#{security.id},#{security.buildId},#{security.roomId},#{security.description},#{security.discover},#{security.discoverTime},#{security.status},#{security.flag})")
+    @Insert("INSERT INTO security (id,buildId,roomId,description,discover,discoverTime,status,flag,result)VALUES(#{security.id},#{security.buildId},#{security.roomId},#{security.description},#{security.discover},#{security.discoverTime},#{security.status},#{security.flag},#{security.result})")
     int insertSecurity(@Param("security") Security security);
 
     /**
@@ -62,12 +62,25 @@ public interface SecurityDao {
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
      * @Author Hxx
-     * @Description //TODO 申请复查
+     * @Description //TODO 处理复查
      * @Date 10:38 2019/12/17
      * @Param []
      **/
-    @Select("SELECT * FROM security where result <> 2")
+    @Update("UPDATE security SET status=#{security.status},flag=#{security.flag},result=#{security.result},checker=#{security.checker},checkTime=#{security.checkTime} WHERE id=#{security.id}")
+    int handleWait(@Param("security") Security security);
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Security>
+     * @Author Hxx
+     * @Description //TODO  申请复查列表
+     * @Date 11:38 2019/12/18
+     * @Param []
+     **/
+    @Select("SELECT * FROM security WHERE result <> 2")
     List<Security> findApply();
+
+    @Select("SELECT COUNT(1) FROM security WHERE result <> 2")
+    int applyTotal();
 
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
@@ -76,8 +89,11 @@ public interface SecurityDao {
      * @Date 10:38 2019/12/17
      * @Param []
      **/
-    @Select("SELECT * FROM security where status=1 and flag =1 and result=1")
+    @Select("SELECT * FROM security WHERE status=1 AND flag =1 AND result=1")
     List<Security> findWait();
+
+    @Select("SELECT COUNT(1) FROM security WHERE status=1 AND flag =1 AND result=1 ")
+    int waitTotal();
 
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
@@ -89,10 +105,24 @@ public interface SecurityDao {
     @Select("SELECT * FROM security WHERE status=1 AND flag =1 AND result=2")
     List<Security> findSolved();
 
+    @Select("SELECT COUNT(1) FROM security where status=1 AND flag =1 AND result=2 ")
+    int solvedTotal();
+
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 根据指定字段查询隐患信息
+     * @Date 16:08 2019/12/19
+     * @Param []
+     **/
+    @Select(" SELECT * FROM security WHERE status=0 AND flag=0 AND ${sql} ")
+    List<Security> findBykeywords(@Param("sql") String sql);
+
+    @Select("SELECT * FROM security WHERE id=#{id}")
+    Security findById(@Param("id") String id);
+
 
     @Select("SELECT COUNT(1) FROM security")
     int total();
 
-    @Select(" SELECT * FROM security WHERE status=0 AND flag=0 AND ${sql} ")
-    List<Security> findBykeywords(@Param("sql") String sql);
 }

@@ -55,8 +55,8 @@ public interface UserDao {
      * @Date 15:10 2019/10/28
      * @Param [userName]
      **/
-    @Select("SELECT * FROM user WHERE userName LIKE '%${userName}%' ")
-    User findByUserName(@Param("userName") String userName);
+    @Select("SELECT * FROM user WHERE userName =#{userName} AND id <> #{id}")
+    User findByUserName(@Param("userName") String userName, @Param("id") long id);
 
     /**
      * @return void
@@ -66,7 +66,7 @@ public interface UserDao {
      * @Param [user]
      **/
     @Update("UPDATE user SET userName=#{user.userName},sex=#{user.sex},age=#{user.age},tel=#{user.tel} WHERE userName=#{user.userName}")
-    void alterUser(@Param("user") User user);
+    int alterUser(@Param("user") User user);
 
 
     /**
@@ -128,17 +128,8 @@ public interface UserDao {
      * @Param [user]
      **/
     @Delete("DELETE FROM user WHERE userName =#{userName}")
-    void delByUserName(@Param("userName") String userName);
+    int delByUserName(@Param("userName") String userName);
 
-    /**
-     * @return void
-     * @Author Hxx
-     * @Description //TODO 根据学号或工号删除用户信息
-     * @Date 15:00 2019/11/7
-     * @Param [user]
-     **/
-    @Delete("DELETE  FROM user where number= #{number}")
-    void delByNumber(@Param("number") String number);
 
     @Select("SELECT r.* FROM user_role ur,role r where ur.rid=r.id AND ur.userid=#{id}")
     List<Role> getRolesByUserId(Long id);
@@ -154,6 +145,6 @@ public interface UserDao {
     @Delete("")
     int deleteBatch();
 
-    @Select("select count(1) from user")
+    @Select("SELECT COUNT(1) FROM user WHERE userName <> 'sysadmin'")
     int total();
 }

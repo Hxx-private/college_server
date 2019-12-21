@@ -28,6 +28,10 @@ public class SecurityService {
         return securityDao.findAll();
     }
 
+    public int total() {
+        return securityDao.total();
+    }
+
     /**
      * @return int
      * @Author Hxx
@@ -53,7 +57,7 @@ public class SecurityService {
     /**
      * @return void
      * @Author Hxx
-     * @Description //TODO 处理安全隐患
+     * @Description //TODO 申请复查
      * @Date 10:13 2019/11/1
      * @Param [repair]
      **/
@@ -64,7 +68,7 @@ public class SecurityService {
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
      * @Author Hxx
-     * @Description //TODO 申请复查
+     * @Description //TODO 申请复查列表
      * @Date 10:41 2019/12/17
      * @Param []
      **/
@@ -72,10 +76,14 @@ public class SecurityService {
         return securityDao.findApply();
     }
 
+    public int applyTotal() {
+        return securityDao.applyTotal();
+    }
+
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
      * @Author Hxx
-     * @Description //TODO 待复查
+     * @Description //TODO 待复查列表
      * @Date 10:42 2019/12/17
      * @Param []
      **/
@@ -83,10 +91,14 @@ public class SecurityService {
         return securityDao.findWait();
     }
 
+    public int waitTotal() {
+        return securityDao.waitTotal();
+    }
+
     /**
      * @return java.util.List<com.hxx.demo.entity.Security>
      * @Author Hxx
-     * @Description //TODO 已处理
+     * @Description //TODO 已处理列表
      * @Date 10:45 2019/12/17
      * @Param []
      **/
@@ -94,14 +106,32 @@ public class SecurityService {
         return securityDao.findSolved();
     }
 
+    public int solvedTotal() {
+        return securityDao.solvedTotal();
+    }
+
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 处理复查
+     * @Date 11:42 2019/12/18
+     * @Param [security]
+     **/
+    public int handleWait(Security security) {
+        return securityDao.handleWait(security);
+    }
+
+
     public int update(Security security) {
 
         return securityDao.update(security);
     }
-    public int total() {
-        return securityDao.total();
-    }
 
+
+    public Security findById(String id) {
+
+        return securityDao.findById(id);
+    }
 
     public List<Security> getGrid(GridRequest gridJson) {
         ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
@@ -109,6 +139,8 @@ public class SecurityService {
         List<Security> securitys = this.securityDao.findBykeywords(sql);
         return securitys;
     }
+
+
 }
 
 

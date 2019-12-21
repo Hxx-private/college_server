@@ -1,6 +1,7 @@
 package com.hxx.demo.controller;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.hxx.demo.entity.*;
 import com.hxx.demo.service.UserService;
 import com.hxx.demo.utils.DateUtils;
@@ -25,7 +26,8 @@ import java.util.Map;
 @RequestMapping("/user")
 public class AdminController {
     Map<String, Object> map = new HashMap<>();
-
+    @Autowired
+    private UserService userService;
     /**
      * @Author Hxx
      * @Description //TODO 根据指定字段查询用户
@@ -33,9 +35,6 @@ public class AdminController {
      * @Param
      * @return
      **/
-    @Autowired
-    private UserService userService;
-
     @PostMapping(value = "findByKeyWords", consumes = "application/json;charset=UTF-8")
     public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
         HttpEntity httpEntity = new HttpEntity();
@@ -55,37 +54,13 @@ public class AdminController {
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
-     * @Description //TODO 根据真实姓名查找用户
-     * @Date 16:06 2019/10/30
-     * @Param [name]
-     **/
-    @ApiOperation(value = "根据真实姓名查找用户")
-    @ApiImplicitParam(name = "name", value = "真实姓名", required = true, dataType = "String")
-    @GetMapping(value = "/findByName")
-    public RespBean findByName(String name, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<User> list = userService.findByName(name);
-        int total = list.size();
-        map.put("data", list);
-        map.put("total", total);
-        return RespBean.ok("", map);
-    }
-
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Author Hxx
      * @Description //TODO 查询所有用户
      * @Date 11:46 2019/11/6
      * @Param [pageNum, pageSize]当前页，默认为1,size 当前每页显示行数，默认为15
      **/
     @ApiOperation(value = "用户列表")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "pageNum", value = "当前页,默认为1", dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "当前每页显示行数", dataType = "Integer")
-    })
     @GetMapping("/list")
     public RespBean findAllUser(Integer pageNum, Integer pageSize) {
-        //pageNum：当前页数   pageSize：当前页需要显示的数量
         PageHelper.startPage(pageNum, pageSize);
         List<User> list = userService.findAll();
         int total = userService.total();
@@ -102,12 +77,10 @@ public class AdminController {
      * @Date 16:55 2019/11/8
      * @Param [user]
      **/
-    @ApiOperation(value = "添加维修人员和宿管")
+    @ApiOperation(value = "添加其他用户类型")
     @PostMapping("/createUser")
     public RespBean createUser(@RequestBody User user) throws Exception {
-        //设置工号
         user.setNumber(IdUtils.getNumber());
-        //默认密码为1234
         user.setPassword(new BCryptPasswordEncoder().encode("1234").trim());
         user.setRegisterTime(DateUtils.getSysTime());
         user.setEnabled(true);
@@ -132,14 +105,16 @@ public class AdminController {
     @ApiImplicitParam(name = "userName", value = "userName", required = true, dataType = "String")
     @GetMapping("/delByUserName")
     public RespBean delByuserName(String userName) {
-        userService.delByUserName(userName);
-        return RespBean.ok("删除成功");
+        int i = userService.delByUserName(userName);
+        if (i > 0) {
+            return RespBean.ok("删除成功");
+        }
+        return RespBean.error("删除失败");
     }
 
 
     @PostMapping("/updateUser")
     public RespBean updateUser(@RequestBody User user) {
-
         if (userService.updateUser(user) == 1) {
             return RespBean.ok("更新成功!");
         }

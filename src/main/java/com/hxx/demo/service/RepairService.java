@@ -34,7 +34,7 @@ public class RepairService {
     /**
      * @return com.hxx.demo.entity.User
      * @Author Hxx
-     * @Description //TODO 根据status查找报修信息
+     * @Description //TODO 维修记录
      * @Date 17:05 2019/10/28
      * @Param [status]
      **/
@@ -138,6 +138,11 @@ public class RepairService {
     public boolean deleteBatch(String ids) {
         String[] split = ids.split(",");
         return repairDao.deleteBatch(split) == split.length;
+    }
+
+
+    public int update(Repair repair) {
+        return repairDao.update(repair);
     }
 
     public int total() {

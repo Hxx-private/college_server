@@ -1,6 +1,8 @@
 package com.hxx.demo.service;
 
+import com.hxx.demo.dao.BuildDao;
 import com.hxx.demo.dao.RoomDao;
+import com.hxx.demo.entity.Build;
 import com.hxx.demo.entity.GridRequest;
 import com.hxx.demo.entity.Room;
 import com.hxx.demo.utils.ParamsInitUtils;
@@ -18,6 +20,8 @@ import java.util.List;
 public class RoomService {
     @Autowired
     private RoomDao roomDao;
+    @Autowired
+    private BuildDao buildDao;
 
     /**
      * @return void
@@ -28,6 +32,14 @@ public class RoomService {
      **/
     public int addRoom(Room room) {
         return roomDao.addRoom(room);
+    }
+
+    public int addBuild(Integer buildId) {
+        return buildDao.addBuild(buildId);
+    }
+
+    public int addInfo(Integer buildId, String roomId) {
+        return buildDao.addInfo(buildId, roomId);
     }
 
     /**
@@ -53,18 +65,11 @@ public class RoomService {
     }
 
     public int delRoomInfo(String roomId) {
-       return roomDao.delRoomInfo(roomId);
+        return roomDao.delRoomInfo(roomId);
     }
 
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Room>
-     * @Author Hxx
-     * @Description //TODO 根据id查找宿舍
-     * @Date 10:06 2019/11/7
-     * @Param [id]
-     **/
-    public List<Room> findById(String roomId) {
-        return roomDao.findById(roomId);
+    public List<Room> findById(Integer buildId, String roomId) {
+        return roomDao.findById(buildId, roomId);
     }
 
     /**
@@ -92,7 +97,9 @@ public class RoomService {
         return rooms;
     }
 
-    public int total(){
+    public int total() {
         return roomDao.total();
     }
+
+
 }

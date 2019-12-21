@@ -1,7 +1,9 @@
 package com.hxx.demo.service;
 
 import com.hxx.demo.dao.SanitaryDao;
+import com.hxx.demo.entity.GridRequest;
 import com.hxx.demo.entity.Sanitary;
+import com.hxx.demo.utils.ParamsInitUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +17,7 @@ import java.util.List;
  */
 @Service
 @Transactional
-public class SanitaryService{
+public class SanitaryService {
 
     @Autowired
     private SanitaryDao sanitaryDao;
@@ -27,8 +29,8 @@ public class SanitaryService{
      * @Date 13:07 2019/11/2
      * @Param [sanitary]
      **/
-    public void addSanitary(Sanitary sanitary) {
-        sanitaryDao.addSanitary(sanitary);
+    public int addSanitary(Sanitary sanitary) {
+        return sanitaryDao.addSanitary(sanitary);
     }
 
     /**
@@ -113,7 +115,21 @@ public class SanitaryService{
         return sanitaryDao.update(sanitary);
     }
 
-    public int total(){
+    public int total() {
         return sanitaryDao.total();
+    }
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Sanitary>
+     * @Author Hxx
+     * @Description //TODO 根据指定字段查询卫生状况
+     * @Date 15:48 2019/12/19
+     * @Param [gridJson]
+     **/
+    public List<Sanitary> getGrid(GridRequest gridJson) {
+        ParamsInitUtils paramsInitUtils = new ParamsInitUtils();
+        String sql = paramsInitUtils.initParams(gridJson, "sanitary");
+        List<Sanitary> users = this.sanitaryDao.findBykeywords(sql);
+        return users;
     }
 }

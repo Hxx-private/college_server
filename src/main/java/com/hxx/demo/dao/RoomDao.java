@@ -35,15 +35,6 @@ public interface RoomDao {
     @Delete("DELETE  FROM build_room where roomId=#{roomId}")
     int delRoomInfo(@Param("roomId") String roomId);
 
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Room>
-     * @Author Hxx
-     * @Description //TODO 根据宿舍id查找宿舍
-     * @Date 10:05 2019/11/7
-     * @Param [roomId]
-     **/
-    @Select("DELETE  FROM room where roomId=#{roomId}")
-    List<Room> findById(@Param("roomId") String roomId);
 
     /**
      * @return java.util.List<com.hxx.demo.entity.Room>
@@ -61,7 +52,17 @@ public interface RoomDao {
     @Update("UPDATE room SET roomId=#{roomId},num=#{num},remarks=#{remarks}")
     int updateRoom(@Param("room") Room room);
 
-    @Select("SELECT COUNT(1) FROM room")
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Room>
+     * @Author Hxx
+     * @Description //TODO 根据宿舍id查找宿舍
+     * @Date 10:05 2019/11/7
+     * @Param [roomId]
+     **/
+    @Select("select *  FROM v_build_room WHERE buildId=#{buildId} AND roomId=#{roomId}")
+    List<Room> findById(@Param("buildId") Integer buildId, @Param("roomId") String roomId);
+
+    @Select("SELECT COUNT(1) FROM v_build_room")
     int total();
 }
 

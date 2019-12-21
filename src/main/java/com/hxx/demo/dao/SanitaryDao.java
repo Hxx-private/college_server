@@ -1,6 +1,8 @@
 package com.hxx.demo.dao;
+
 import com.hxx.demo.entity.Sanitary;
 import org.apache.ibatis.annotations.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +21,8 @@ public interface SanitaryDao {
      * @Date 13:08 2019/11/2
      * @Param [sanitary]
      **/
-    @Insert("insert into sanitary values(#{sanitary.id},#{sanitary.checkTime},#{sanitary.roomId},#{sanitary.content},#{sanitary.grade})")
-    void addSanitary(@Param("sanitary") Sanitary sanitary);
+    @Insert("insert into sanitary values(#{sanitary.id},#{sanitary.uName},#{sanitary.checkTime},#{sanitary.roomId},#{sanitary.content},#{sanitary.grade},#{sanitary.buildId})")
+    int addSanitary(@Param("sanitary") Sanitary sanitary);
 
 
     /**
@@ -55,6 +57,7 @@ public interface SanitaryDao {
 
     @Select("select * from sanitary where checkTime=#{checkTime}")
     List<Sanitary> findBySaCheckTime(@Param("checkTime") String checkTime);
+
     /**
      * @return
      * @Author Hxx
@@ -99,11 +102,20 @@ public interface SanitaryDao {
     void delBycheckTime(@Param("checkTime") String checkTime);
 
 
-
     @Update("update sanitary set uName=#{sanitary.uName},checkTime=#{sanitary.checkTime},roomId=#{sanitary.roomId}," +
             "content=#{sanitary.content},grade=#{sanitary.grade},buildId=#{sanitary.buildId} where id = #{sanitary.id}")
     int update(@Param("sanitary") Sanitary sanitary);
 
-    @Select("select count(1) from sanitary")
+    @Select("SELECT COUNT(1) FROM sanitary")
     int total();
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Sanitary>
+     * @Author Hxx
+     * @Description //TODO 根据指定字段查询卫生信息
+     * @Date 15:51 2019/12/19
+     * @Param [sql]
+     **/
+    @Select(" SELECT * FROM sanitary WHERE  ${sql}")
+    List<Sanitary> findBykeywords(@Param("sql") String sql);
 }

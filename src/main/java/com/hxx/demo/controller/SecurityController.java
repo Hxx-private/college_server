@@ -64,9 +64,9 @@ public class SecurityController {
     @GetMapping("/sec/list")
     public RespBean findAll(Integer pageNum, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
+        int total = securityService.findAll().size();
         PageHelper.startPage(pageNum, pageSize);
         List<Security> list = securityService.findAll();
-        int total = securityService.total();
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);
@@ -108,6 +108,8 @@ public class SecurityController {
         security.setDiscover(UserUtils.getCurrentUser().getName());
         security.setDiscoverTime(DateUtils.getSysTime());
         int i = securityService.insertSecurity(security);
+        security.setOperator("");
+        security.setChecker("");
         int j = historyService.addhistory(security);
         if (i > 0 && j > 0) {
             return RespBean.ok("发布成功");
@@ -126,22 +128,35 @@ public class SecurityController {
     @GetMapping("/sec/apply/list")
     public RespBean findApply(Integer pageNum, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
-        PageHelper.startPage(pageNum, pageSize);
-        List<Security> list = securityService.findApply();
+        String roomId = UserUtils.getCurrentUser().getRoomId();
+        Integer buildId = UserUtils.getCurrentUser().getBuildId();
         List<Security> filterList = new ArrayList<>();
-        for (Security security : list) {
-            if (UserUtils.getCurrentUser().getRoomId().equals(security.getRoomId()) && UserUtils.getCurrentUser().getBuildId().equals(security.getBuildId())) {
+        List<Security> securities = securityService.findApply();
+        int num=0;
+        for (Security security : securities) {
+            if (roomId.equals(security.getRoomId()) && buildId==security.getBuildId()) {
                 filterList.add(security);
+                num++;
             }
         }
+        PageHelper.startPage(pageNum,pageSize);
+        List<Security> list  = securityService.findApply();
+        List<Security> filterLists = new ArrayList<>();
+        for (Security security : list) {
+            if (roomId.equals(security.getRoomId()) && buildId==security.getBuildId()) {
+                filterLists.add(security);
+            }
+        }
+
         if (filterList.size() > 0) {
-            int total = filterList.size();
-            map.put("data", filterList);
+            int total = num;
+            map.put("data", filterLists);
             map.put("total", total);
             return RespBean.ok("", map);
         }
 
         return RespBean.ok("暂无数据");
+
 
     }
 
@@ -158,10 +173,10 @@ public class SecurityController {
     public RespBean handleSecurity(@PathVariable String id) {
         Security security = new Security();
         security.setId(id);
+        security.setStatus(1);
         security.setFlag(1);
         security.setResult(1);
-        security.setStatus(1);
-        security.setDiscover(UserUtils.getCurrentUser().getName());
+        security.setOperator(UserUtils.getCurrentUser().getName());
         security.setOperateTime(DateUtils.getSysTime());
         int i = securityService.handleSecurity(security);
         if (i > 0) {
@@ -180,21 +195,82 @@ public class SecurityController {
     @GetMapping("/sec/wait/list")
     public RespBean find(Integer pageNum, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
+        int total = securityService.waitTotal();
         PageHelper.startPage(pageNum, pageSize);
         List<Security> list = securityService.findWait();
-        int total = list.size();
         map.put("data", list);
         map.put("total", total);
-        return RespBean.ok("", map);
+        if (list.size()>0){
+            return RespBean.ok("", map);
+        }
+        return RespBean.ok("暂无数据", map);
     }
 
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 处理复查  合格
+     * @Date 11:43 2019/12/18
+     * @Param [id]
+     **/
+    @PostMapping("/sec/waitOk/{id}")
+    public RespBean handleWaitOk(@PathVariable String id) {
+        Security security = new Security();
+        security.setId(id);
+        security.setStatus(1);
+        security.setFlag(1);
+        security.setResult(2);
+        security.setChecker(UserUtils.getCurrentUser().getName());
+        security.setCheckTime(DateUtils.getSysTime());
+        int i = securityService.handleWait(security);
+        Security security1 = securityService.findById(id);
+        security1.setId(IdUtils.getNumberForPK());
+        historyService.addhistory(security1);
+        if (i > 0) {
+            return RespBean.ok("操作成功");
+        }
+        return RespBean.ok("操作失败");
+    }
 
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 处理复查  不合格
+     * @Date 11:43 2019/12/18
+     * @Param [id]
+     **/
+    @PostMapping("/sec/waitError/{id}")
+    public RespBean handleWaitError(@PathVariable String id) {
+        Security security = new Security();
+        security.setId(id);
+        security.setStatus(0);
+        security.setFlag(0);
+        security.setResult(3);
+        security.setChecker(UserUtils.getCurrentUser().getName());
+        security.setCheckTime(DateUtils.getSysTime());
+        int i = securityService.handleWait(security);
+        Security security1 = securityService.findById(id);
+        security1.setId(IdUtils.getNumberForPK());
+        historyService.addhistory(security1);
+        if (i > 0) {
+            return RespBean.ok("操作成功");
+        }
+        return RespBean.ok("操作失败");
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 已处理列表
+     * @Date 11:33 2019/12/18
+     * @Param [pageNum, pageSize]
+     **/
     @GetMapping("/sec/solved/list")
     public RespBean findSolved(Integer pageNum, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
         PageHelper.startPage(pageNum, pageSize);
         List<Security> list = securityService.findSolved();
-        int total = list.size();
+        int total = securityService.solvedTotal();
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);
@@ -208,12 +284,12 @@ public class SecurityController {
      * @Date 9:58 2019/12/17
      * @Param [pageNum, pageSize]
      **/
-    @GetMapping("/history/list")
+    @GetMapping("/sec/history/list")
     public RespBean findhistory(Integer pageNum, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
+        int total = historyService.total();
         PageHelper.startPage(pageNum, pageSize);
         List<Security> list = historyService.find();
-        int total = historyService.total();
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);
@@ -226,12 +302,53 @@ public class SecurityController {
      * @Date 17:05 2019/12/13
      * @Param []
      **/
-    @DeleteMapping("history/delete")
+    @DeleteMapping("/sec/history/delete")
     public RespBean deleteRecord() {
         int i = historyService.delete();
         if (i > 0) {
             return RespBean.ok("数据已清空");
         }
         return RespBean.error("操作失败");
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 检查记录
+     * @Date 10:17 2019/12/17
+     * @Param [pageNum, pageSize]
+     **/
+    @GetMapping("/sec/check/list")
+    public RespBean check(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        String roomId = UserUtils.getCurrentUser().getRoomId();
+        Integer buildId = UserUtils.getCurrentUser().getBuildId();
+        List<Security> filterLists = new ArrayList<>();
+        List<Security> securities = historyService.find();
+        int num=0;
+        for (Security security : securities) {
+            if (roomId.equals(security.getRoomId()) && buildId==security.getBuildId()) {
+                filterLists.add(security);
+                num++;
+            }
+        }
+        PageHelper.startPage(pageNum,pageSize);
+        List<Security> list  = historyService.find();
+        List<Security> filterList = new ArrayList<>();
+        for (Security security : list) {
+            if (roomId.equals(security.getRoomId()) && buildId==security.getBuildId()) {
+                filterList.add(security);
+            }
+        }
+
+        if (filterList.size() > 0) {
+            int total = num;
+            map.put("data", filterList);
+            map.put("total", total);
+            return RespBean.ok("", map);
+        }
+
+        return RespBean.ok("暂无数据");
+
     }
 }

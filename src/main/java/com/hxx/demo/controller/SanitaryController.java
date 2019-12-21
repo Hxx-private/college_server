@@ -1,10 +1,7 @@
 package com.hxx.demo.controller;
 
 import com.github.pagehelper.PageHelper;
-import com.hxx.demo.entity.HttpEntity;
-import com.hxx.demo.entity.RespBean;
-import com.hxx.demo.entity.Result;
-import com.hxx.demo.entity.Sanitary;
+import com.hxx.demo.entity.*;
 import com.hxx.demo.service.SanitaryService;
 import com.hxx.demo.utils.DateUtils;
 import com.hxx.demo.utils.IdUtils;
@@ -16,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +27,7 @@ import java.util.Map;
 @Api(value = "SanitaryController")
 @RestController
 @RequestMapping("/sanitary")
-public class SanitaryController{
+public class SanitaryController {
     @Autowired
     SanitaryService sanitaryService;
 
@@ -40,23 +38,17 @@ public class SanitaryController{
      * @Date 13:33 2019/11/2
      * @Param [sanitary]
      **/
-    @ApiOperation("卫生检查信息反馈")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "content", value = "反馈内容", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "grade", value = "分数", required = true, dataType = "String")
-    })
-    @PostMapping("/sanitary/add")
-    public Map<String, Object> sanitaryAdd(@RequestBody Sanitary sanitary) {
+    @PostMapping("/add")
+    public RespBean sanitaryAdd(@RequestBody Sanitary sanitary) {
         sanitary.setCheckTime(DateUtils.getSysTime());
         sanitary.setId(IdUtils.getNumberForPK());
         sanitary.setUName(UserUtils.getCurrentUser().getName());
-        sanitaryService.addSanitary(sanitary);
-        if (!sanitaryService.findById(sanitary.getId()).isEmpty()) {
+        int i = sanitaryService.addSanitary(sanitary);
+        if (i > 0) {
 
-            return Result.successMap(sanitary);
+            return RespBean.ok("添加成功");
         }
-        return Result.failMap("添加失败");
+        return RespBean.ok("添加失败");
 
     }
 
@@ -67,11 +59,6 @@ public class SanitaryController{
      * @Date 13:33 2019/11/2
      * @Param []
      **/
-    @ApiOperation("显示所有检查信息")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "pageNum", value = "当前页", dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "每页显示条数", dataType = "Integer")
-    })
     @GetMapping("/findAll")
     public RespBean sanitaryFindAll(Integer pageNum, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
@@ -81,49 +68,6 @@ public class SanitaryController{
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);
-    }
-
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Author Hxx
-     * @Description //TODO 根据宿舍id查询该宿舍的卫生状况
-     * @Date 13:52 2019/11/2
-     * @Param [roomId]
-     **/
-    @ApiOperation("根据宿舍id查询该宿舍的卫生状况")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "pageNum", value = "当前页", dataType = "Integer"),
-            @ApiImplicitParam(name = "pageSize", value = "每页显示的条数", dataType = "Integer")
-    })
-    @GetMapping("/sanitary/findBySaRoomId/{room_id}")
-    public Map<String, Object> findBySaRoomId(@PathVariable("room_id") String roomId, Integer pageNum, Integer pageSize) {
-        if (!sanitaryService.findBySaRoomid(roomId).isEmpty()) {
-            //pageNum：当前页数   pageSize：当前页需要显示的数量
-            PageHelper.startPage(pageNum, pageSize);
-            return Result.successMap(sanitaryService.findBySaRoomid(roomId));
-        }
-        return Result.failMap("查询失败,请稍后查询");
-    }
-
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Author Hxx
-     * @Description //TODO 根据指定时间查询指定宿舍的卫生信息
-     * @Date 14:31 2019/11/2
-     * @Param [sanitary]
-     **/
-    @ApiOperation("根据指定时间查询指定宿舍的卫生信息")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "checkTime", value = "检查时间", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "roomId", value = "宿舍id", required = true, dataType = "String")
-    })
-    @GetMapping("/sanitary/findRidByCtm")
-    public Map<String, Object> findRidByCtm(@RequestBody Sanitary sanitary) {
-        if (!sanitaryService.findRidByCtm(sanitary.getRoomId(), sanitary.getCheckTime()).isEmpty()) {
-            return Result.successMap(sanitaryService.findRidByCtm(sanitary.getRoomId(), sanitary.getCheckTime()));
-        }
-        return Result.failMap("查询失败,请稍后查询");
     }
 
     /**
@@ -144,34 +88,80 @@ public class SanitaryController{
         return RespBean.error("删除失败");
     }
 
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Author Hxx
-     * @Description //TODO 根据检查时间删除卫生信息
-     * @Date 16:07 2019/11/8
-     * @Param [checkTime]
-     **/
-    @ApiOperation("根据检查时间删除卫生信息")
-    @ApiImplicitParam(name = "checkTime", value = "检查时间", required = true, dataType = "String")
-    @DeleteMapping("/sanitary/delByCheckTime")
-    public Map<String, Object> delByCheckTime( String checkTime) {
-        sanitaryService.delBycheckTime(checkTime);
-        if (sanitaryService.findBySaCheckTime(checkTime).isEmpty()) {
-            return Result.successMap("删除成功");
-        }
-        return Result.failMap("删除失败");
-    }
-
 
     @PostMapping("/update")
-    public RespBean update(@RequestBody Sanitary sanitary){
+    public RespBean update(@RequestBody Sanitary sanitary) {
         int update = sanitaryService.update(sanitary);
 
-        if (update>0){
+        if (update > 0) {
             return RespBean.ok("保存成功");
         }
 
         return RespBean.error("保存失败");
 
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 检查记录
+     * @Date 9:37 2019/12/19
+     * @Param [pageNum, pageSize]
+     **/
+    @GetMapping("dor/check/list")
+    public RespBean findList(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<Sanitary> sanitarys = sanitaryService.selectAllSanitary();
+        List<Sanitary> filterList = new ArrayList<>();
+        int num=0;
+        for (Sanitary sanitary : sanitarys) {
+            if (UserUtils.getCurrentUser().getRoomId().equals(sanitary.getRoomId()) && UserUtils.getCurrentUser().getBuildId().equals(sanitary.getBuildId())) {
+                PageHelper.startPage(pageNum, pageSize);
+                filterList.add(sanitary);
+                num++;
+            }
+        }
+        PageHelper.startPage(pageNum,pageSize);
+        List<Sanitary> list = sanitaryService.selectAllSanitary();
+        List<Sanitary> filterLists = new ArrayList<>();
+        for (Sanitary sanitary : list) {
+            if (UserUtils.getCurrentUser().getRoomId().equals(sanitary.getRoomId()) && UserUtils.getCurrentUser().getBuildId().equals(sanitary.getBuildId())) {
+                PageHelper.startPage(pageNum, pageSize);
+                filterLists.add(sanitary);
+            }
+        }
+
+        if (filterLists.size() > 0) {
+            int total = filterLists.size();
+            map.put("data", filterLists);
+            map.put("total", total);
+            return RespBean.ok("", map);
+        }
+        return RespBean.ok("暂无数据");
+
+    }
+
+    /**
+     * @Author Hxx
+     * @Description //TODO 根据指定字段查询卫生信息
+     * @Date 11:53 2019/12/2
+     * @Param
+     * @return
+     **/
+    @PostMapping(value = "san/findByKeyWords", consumes = "application/json;charset=UTF-8")
+    public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
+        HttpEntity httpEntity = new HttpEntity();
+        Grid grid = new Grid();
+        PageHelper.startPage(gridJson.getPageNum(),gridJson.getPageSize());
+        List<Sanitary> list = this.sanitaryService.getGrid(gridJson);
+        int total = list.size();
+        grid.setData(list);
+        grid.setPageNum(gridJson.getPageNum());
+        grid.setTotal(total);
+        grid.setPageSize(gridJson.getPageSize());
+        httpEntity.setData(grid);
+        httpEntity.setStatus(200);
+        return httpEntity;
     }
 }

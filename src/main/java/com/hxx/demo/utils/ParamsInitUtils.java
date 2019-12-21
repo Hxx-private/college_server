@@ -37,7 +37,7 @@ public class ParamsInitUtils<T> {
         String sql = "";
         //查询的条件
         if(gridRequest.getWhereConditions().isEmpty() ){
-             return "1=1";
+           return "1=-1";
         }
         for (int i = 0; i < gridRequest.getWhereConditions().size(); i++) {
             WhereCondition whereCondition = gridRequest.getWhereConditions().get(i);
