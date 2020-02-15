@@ -4,12 +4,11 @@ package com.hxx.demo.controller;
 import com.github.pagehelper.PageHelper;
 import com.hxx.demo.entity.*;
 import com.hxx.demo.service.RoomService;
-import com.hxx.demo.service.UserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
+import com.hxx.demo.utils.DateUtils;
+import com.hxx.demo.utils.PoiUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -36,20 +35,23 @@ public class RoomController {
      **/
     @PostMapping("/addRoom")
     public RespBean addRoom(@RequestBody Room room) {
-
-        if (null!=roomService.findById(room.getBuildId(),room.getRoomId())) {
-            return RespBean.error("该宿舍信息已经存在,请勿重复添加");
-        } else {
+        Integer buildId=room.getBuildId();
+        String roomId=room.getRoomId();
+        if (roomService.findById(buildId, roomId).isEmpty()) {
+            room.setCreateTime(DateUtils.getSysTime());
             int i = roomService.addRoom(room);
-            int j = roomService.addBuild(room.getBuildId());
-            int k = roomService.addInfo(room.getBuildId(),room.getRoomId());
-            if (i > 0 && j > 0&&k>0) {
-                return RespBean.ok("添加成功", room);
+            if (roomService.findByBuildid(buildId)==null){
+              roomService.addBuild(buildId);
+            }
+            int k = roomService.addInfo(buildId,roomId);
+            if (i > 0 && k > 0) {
+                return RespBean.ok("添加成功");
             }
             return RespBean.error("添加失败");
+
         }
 
-
+        return RespBean.error("该宿舍信息已经存在,请勿重复添加");
     }
 
     /**
@@ -118,13 +120,65 @@ public class RoomController {
      * @Date 15:49 2019/12/11
      * @Param []
      **/
-    @PostMapping("updateRoom")
+    @PostMapping("/updateRoom")
     public RespBean updateRoom(@RequestBody Room room) {
-        int i = roomService.updateRoom(room);
-        if (i > 0) {
+        long id = roomService.findInfo(room.getBuildId(), room.getRoomId()).getId();
+        Room room1 = new Room();
+        room1.setId(id);
+        room1.setRoomId(room.getRoomId());
+        room1.setBuildId(room.getBuildId());
+        int j = roomService.editRoomInfo(room1);
+        int i = roomService.editRoom(room);
+        if (i > 0 && j > 0) {
             return RespBean.ok("修改成功");
         }
         return RespBean.error("修改失败");
     }
+
+
+    /**
+     * @return org.springframework.http.ResponseEntity<byte [ ]>
+     * @Author Hxx
+     * @Description //TODO 导出宿舍信息
+     * @Date 10:46 2019/12/12
+     * @Param []
+     **/
+    @GetMapping(value = "/export")
+    public ResponseEntity<byte[]> exportUser() {
+        return PoiUtils.exportDormExcel(roomService.findAll());
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 批量删除
+     * @Date 16:06 2019/12/27
+     * @Param [ids]
+     **/
+    @DeleteMapping("deleteBatch/{ids}")
+    public RespBean deleteBatch(@PathVariable String ids) {
+        if (roomService.deleteBatch(ids)) {
+            return RespBean.ok("删除成功!");
+        }
+        return RespBean.error("删除失败!");
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO  根据roomId查找宿舍信息
+     * @Date 14:41 2019/12/28
+     * @Param [buildId, roomId]
+     **/
+    @GetMapping("/findById")
+    public RespBean findById(Integer buildId, String roomId) {
+        List<Room> list = roomService.findById(buildId, roomId);
+        if (list.size() > 0) {
+            return RespBean.ok("", list);
+        }
+        return RespBean.error("查询失败");
+
+    }
+
 
 }

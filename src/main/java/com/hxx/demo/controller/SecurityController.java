@@ -12,7 +12,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,34 +129,15 @@ public class SecurityController {
         Map<String, Object> map = new HashMap<>();
         String roomId = UserUtils.getCurrentUser().getRoomId();
         Integer buildId = UserUtils.getCurrentUser().getBuildId();
-        List<Security> filterList = new ArrayList<>();
-        List<Security> securities = securityService.findApply();
-        int num=0;
-        for (Security security : securities) {
-            if (roomId.equals(security.getRoomId()) && buildId==security.getBuildId()) {
-                filterList.add(security);
-                num++;
-            }
-        }
-        PageHelper.startPage(pageNum,pageSize);
-        List<Security> list  = securityService.findApply();
-        List<Security> filterLists = new ArrayList<>();
-        for (Security security : list) {
-            if (roomId.equals(security.getRoomId()) && buildId==security.getBuildId()) {
-                filterLists.add(security);
-            }
-        }
-
-        if (filterList.size() > 0) {
-            int total = num;
-            map.put("data", filterLists);
+        int total = securityService.findApply(buildId, roomId).size();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Security> list = securityService.findApply(buildId, roomId);
+        if (list.size() > 0) {
+            map.put("data", list);
             map.put("total", total);
             return RespBean.ok("", map);
         }
-
         return RespBean.ok("暂无数据");
-
-
     }
 
 
@@ -200,7 +180,7 @@ public class SecurityController {
         List<Security> list = securityService.findWait();
         map.put("data", list);
         map.put("total", total);
-        if (list.size()>0){
+        if (list.size() > 0) {
             return RespBean.ok("", map);
         }
         return RespBean.ok("暂无数据", map);
@@ -323,32 +303,30 @@ public class SecurityController {
         Map<String, Object> map = new HashMap<>();
         String roomId = UserUtils.getCurrentUser().getRoomId();
         Integer buildId = UserUtils.getCurrentUser().getBuildId();
-        List<Security> filterLists = new ArrayList<>();
-        List<Security> securities = historyService.find();
-        int num=0;
-        for (Security security : securities) {
-            if (roomId.equals(security.getRoomId()) && buildId==security.getBuildId()) {
-                filterLists.add(security);
-                num++;
-            }
-        }
-        PageHelper.startPage(pageNum,pageSize);
-        List<Security> list  = historyService.find();
-        List<Security> filterList = new ArrayList<>();
-        for (Security security : list) {
-            if (roomId.equals(security.getRoomId()) && buildId==security.getBuildId()) {
-                filterList.add(security);
-            }
-        }
-
-        if (filterList.size() > 0) {
-            int total = num;
-            map.put("data", filterList);
+        int total = historyService.findCheck(buildId, roomId).size();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Security> list = historyService.findCheck(buildId, roomId);
+        if (list.size() > 0) {
+            map.put("data", list);
             map.put("total", total);
             return RespBean.ok("", map);
         }
-
         return RespBean.ok("暂无数据");
 
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 批量删除
+     * @Date 16:24 2019/12/27
+     * @Param [ids]
+     **/
+    @DeleteMapping("deleteBatch/{ids}")
+    public RespBean deleteBatch(@PathVariable String ids) {
+        if (securityService.deleteBatch(ids)) {
+            return RespBean.ok("删除成功!");
+        }
+        return RespBean.error("删除失败!");
     }
 }

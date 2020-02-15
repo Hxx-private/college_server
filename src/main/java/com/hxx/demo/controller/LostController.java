@@ -1,19 +1,18 @@
 package com.hxx.demo.controller;
 
 import com.github.pagehelper.PageHelper;
+import com.hxx.demo.config.ServerConfig;
 import com.hxx.demo.entity.*;
 import com.hxx.demo.service.LostService;
 import com.hxx.demo.utils.DateUtils;
 import com.hxx.demo.utils.IdUtils;
 import com.hxx.demo.utils.UserUtils;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,39 +32,11 @@ public class LostController {
     @Autowired
     private LostService lostService;
     Map<String, Object> map = new HashMap<>();
+    @Autowired
+    private ServerConfig serverConfig;
+    @Value("${web.upload-path}")
+    private String path;
 
-    /**
-     * @return
-     * @Author Hxx
-     * @Description //TODO 根据创建者查询所有失物信息
-     * @Date 10:47 2019/10/31
-     * @Param
-     **/
-    @GetMapping("/los/findLostByCreater/{creater}")
-    public Map<String, Object> findLostByCreater(@PathVariable("creater") String creater, Integer pageNum, Integer pageSize) {
-        if (lostService.getLostByCreater(creater).isEmpty()) {
-            Result.failMap("您还没有发布过失物信息");
-        }
-        PageHelper.startPage(pageNum, pageSize);
-        return Result.successMap(lostService.getLostByCreater(creater));
-    }
-
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Author Hxx
-     * @Description //TODO 查询当天所有丢失信息
-     * @Date 10:50 2019/10/31
-     * @Param []
-     **/
-    @GetMapping("/getTodayAllLost")
-    public Map<String, Object> getTodayAllLost(Integer pageNum, Integer pageSize) {
-        if (lostService.getTodayAllLost().isEmpty()) {
-            return Result.failMap("今天没有丢失物品信息");
-        }
-        //pageNum：当前页数   pageSize：当前页需要显示的数量
-        PageHelper.startPage(pageNum, pageSize);
-        return Result.successMap(lostService.getTodayAllLost());
-    }
 
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
@@ -74,95 +45,57 @@ public class LostController {
      * @Date 11:15 2019/10/31
      * @Param [periodTime]
      **/
-    @GetMapping("/getLostByPeriod")
-    public Map<String, Object> getLostByPeriod(@RequestBody PeriodTime periodTime, Integer pageNum, Integer pageSize) {
-        if (lostService.getLostByPeriod(periodTime).isEmpty()) {
-            return Result.failMap("所选时间段内没有丢失物品信息");
+    @PostMapping("/los/getByPeriod")
+    public RespBean getLostByPeriod(@RequestBody PeriodTime time) {
+        if (lostService.getLostByPeriod(time).isEmpty()) {
+            return RespBean.ok("所选时间段内无丢失物品");
         }
-        //pageNum：当前页数   pageSize：当前页需要显示的数量
-        PageHelper.startPage(pageNum, pageSize);
-        return Result.successMap(lostService.getLostByPeriod(periodTime));
+        int total = lostService.getLostByPeriod(time).size();
+        PageHelper.startPage(time.getPageNum(), time.getPageSize());
+        List<Lost> list = lostService.getLostByPeriod(time);
+        if (total > 0) {
+            return RespBean.ok("", list);
+        }
+        return RespBean.ok("暂无数据");
     }
 
-
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Author Hxx
-     * @Description //TODO 根据发布人来删除帖子
-     * @Date 9:03 2019/11/8
-     * @Param [roomId]
-     **/
-    @ApiOperation("根据发布人来删除帖子")
-    @ApiImplicitParam(name = "creater", value = "创建人", required = true, dataType = "String")
-    @DeleteMapping("delBycreater/{creater}")
-    public Map<String, Object> delBycreater(@PathVariable("creater") String creater) {
-        lostService.delBycreater(creater);
-        if (lostService.getLostByCreater(creater).isEmpty()) {
-            return Result.successMap("删除成功");
-        }
-        return Result.failMap("删除失败");
-    }
-
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Author Hxx
-     * @Description //TODO 根据发布时间来删除帖子
-     * @Date 16:07 2019/11/8
-     * @Param [checkTime]
-     **/
-    @ApiOperation("根据发布时间来删除帖子")
-    @ApiImplicitParam(name = "createTime", value = "发布人", required = true, dataType = "String")
-    @DeleteMapping("/delBycreateTime/{createTime}")
-    public Map<String, Object> delBycreateTime(@PathVariable("createTime") String createTime) {
-        lostService.delBycreateTime(createTime);
-        if (lostService.findBycreateTime(createTime).isEmpty()) {
-            return Result.successMap("删除成功");
-        }
-        return Result.failMap("删除失败");
-    }
 
     /**
      * @return com.hxx.demo.entity.HttpEntity
      * @Author Hxx
-     * @Description //TODO 根据指定字段查询失物信息
+     * @Description //TODO 根据关键字搜索失物信息
      * @Date 10:06 2019/12/12
      * @Param [gridJson]
      **/
-    @PostMapping(value = "findByKeyWords", consumes = "application/json;charset=UTF-8")
-    public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
-        HttpEntity httpEntity = new HttpEntity();
-        Grid grid = new Grid();
-        PageHelper.startPage(gridJson.getPageNum(), gridJson.getPageSize());
-        List<Lost> list = this.lostService.getGrid(gridJson);
-        int total = list.size();
-        grid.setData(list);
-        grid.setPageNum(gridJson.getPageNum());
-        grid.setTotal(total);
-        grid.setPageSize(grid.getPageSize());
-        httpEntity.setData(grid);
-        httpEntity.setStatus(200);
-        return httpEntity;
+    @RequestMapping(value = "/findByKeyWords/{keywords}")
+    public RespBean findByKeyWords(@PathVariable("keywords") String keywords) {
+        List<Lost> list = lostService.findByKewords(keywords);
+        if (list.size() > 0) {
+            return RespBean.ok("", list);
+        }
+        return RespBean.ok("暂无数据");
     }
 
 
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
-     * @Description //TODO 创建失物信息帖子
+     * @Description //TODO 发布失物信息
      * @Date 9:46 2019/10/30
      * @Param [lost]
      **/
-    @ApiOperation(value = "创建失物信息帖子", notes = "根据Lost对象创建失物信息,创建人为当前登录用户，由前端来获取")
     @PostMapping("/los/addLost")
     public RespBean addLost(@RequestBody Lost lost) {
+        lost.setCreater(UserUtils.getCurrentUser().getName());
         lost.setId(IdUtils.getNumberForPK());
+        lost.setImgUrl(ImageController.imgUrl);
         lost.setCreateTime(DateUtils.getSysTime());
         int i = lostService.insertLost(lost);
         if (i == 1) {
             return RespBean.ok("发布成功", lost);
         }
 
-        return RespBean.error("发布失败", lost);
+        return RespBean.ok("发布失败");
     }
 
     /**
@@ -174,13 +107,12 @@ public class LostController {
      **/
     @GetMapping("/los/findAllLost")
     public RespBean findAllLost(Integer pageNum, Integer pageSize) {
-
+        int total = lostService.findAllLost().size();
         PageHelper.startPage(pageNum, pageSize);
         List<Lost> list = lostService.findAllLost();
-        int total = lostService.total();
         map.put("data", list);
         map.put("total", total);
-        return RespBean.ok("数据获取成功", map);
+        return RespBean.ok("", map);
     }
 
     /**
@@ -194,26 +126,12 @@ public class LostController {
      */
     @GetMapping("/los/findAllHistoryLost")
     public RespBean findAllHistoryLost(Integer pageNum, Integer pageSize) {
-        List<Lost> losts = lostService.findAllHistoryLost();
-        List<Lost> filterList = new ArrayList<>();
-        int num = 0;
-        for (Lost lost : losts) {
-            if (UserUtils.getCurrentUser().getName().equals(lost.getCreater())) {
-                filterList.add(lost);
-                num++;
-            }
-        }
+        String creater = UserUtils.getCurrentUser().getName();
+        int total = lostService.findAllHistoryLost(creater).size();
         PageHelper.startPage(pageNum, pageSize);
-        List<Lost> list = lostService.findAllHistoryLost();
-        List<Lost> filterLists = new ArrayList<>();
-        for (Lost lost : list) {
-            if (UserUtils.getCurrentUser().getName().equals(lost.getCreater())) {
-                filterLists.add(lost);
-            }
-        }
-        if (filterLists.size() > 0) {
-            int total = num;
-            map.put("data", filterLists);
+        List<Lost> list = lostService.findAllHistoryLost(creater);
+        if (list.size() > 0) {
+            map.put("data", list);
             map.put("total", total);
             return RespBean.ok("", map);
         }
@@ -223,13 +141,12 @@ public class LostController {
 
 
     /**
-     * 功能描述//TODO一键删除历史记录表所哟的记录
-     *
-     * @param
      * @return com.hxx.demo.entity.RespBean
-     * @author Mzx
-     * @date 2019/12/17
-     */
+     * @Author Hxx
+     * @Description //TODO 历史记录
+     * @Date 14:38 2019/12/23
+     * @Param []
+     **/
 
     @DeleteMapping("/los/deleteAllHistory")
     public RespBean deleteAll() {

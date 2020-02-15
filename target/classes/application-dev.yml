@@ -1,0 +1,64 @@
+server:
+  port: 8083
+spring:
+  datasource:
+    name: college
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      filters: stat
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://47.93.25.57/college_test?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai
+      username: root
+      password: 1234
+      initial-size: 1
+      min-idle: 1
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 'x'
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size: 20
+  #设置单个文件最大内存
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      #设置所有文件最大内存
+      max-request-size: 1024MB
+
+  mvc:
+#    #配置文件路径
+#    static-path-pattern: /images/**
+#  resources:
+#    static-locations: file:E://college//pic/
+#mybatis相关配置
+mybatis:
+  config-location:
+    classpath: mybatis-config.xml
+#pagehelper
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+  returnPageInfo: check
+#打印sql语句
+ogging:
+  level:
+    com:
+      hxx:
+        demo:
+          dao: debug
+
+#生产环境禁用，设置为false即可
+swagger:
+  enable: true
+
+# 自定义文件上传路径
+web.upload-path: E:/college/pic/
+
+

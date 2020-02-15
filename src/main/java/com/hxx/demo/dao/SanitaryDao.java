@@ -2,6 +2,7 @@ package com.hxx.demo.dao;
 
 import com.hxx.demo.entity.Sanitary;
 import org.apache.ibatis.annotations.*;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Map;
@@ -91,17 +92,6 @@ public interface SanitaryDao {
     @Delete("DELETE FROM sanitary WHERE roomId = #{roomId}")
     int delBySaroomId(@Param("roomId") String roomId);
 
-    /**
-     * @return void
-     * @Author Hxx
-     * @Description //TODO 根据检查时间来删除卫生检查信息
-     * @Date 15:00 2019/11/7
-     * @Param [user]
-     **/
-    @Delete("delete  from sanitary where checkTime= #{checkTime}")
-    void delBycheckTime(@Param("checkTime") String checkTime);
-
-
     @Update("update sanitary set uName=#{sanitary.uName},checkTime=#{sanitary.checkTime},roomId=#{sanitary.roomId}," +
             "content=#{sanitary.content},grade=#{sanitary.grade},buildId=#{sanitary.buildId} where id = #{sanitary.id}")
     int update(@Param("sanitary") Sanitary sanitary);
@@ -118,4 +108,17 @@ public interface SanitaryDao {
      **/
     @Select(" SELECT * FROM sanitary WHERE  ${sql}")
     List<Sanitary> findBykeywords(@Param("sql") String sql);
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Sanitary>
+     * @Author Hxx
+     * @Description //TODO 卫生检查记录
+     * @Date 19:50 2019/12/21
+     * @Param [buildId, roomId]
+     **/
+    @Select("SELECT * FROM sanitary WHERE buildId=#{buildId} AND roomId=#{roomId} ")
+    List<Sanitary> findCheckList(@Param("buildId") Integer buildId, @Param("roomId") String roomId);
+
+    @Delete("<script>DELETE FROM sanitary WHERE id IN <foreach collection=\"ids\" separator=\",\" open=\"(\" close=\")\" item=\"id\"> #{id}</foreach></script>")
+    int deleteBatch(@Param("ids")String[] ids);
 }

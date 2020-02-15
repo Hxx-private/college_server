@@ -3,6 +3,7 @@ package com.hxx.demo.utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * @author Hxx
@@ -38,5 +39,7 @@ public class IdUtils {
         number = temp + random;
         return number;
     }
-
+    public static String getUuid() {
+        return UUID.randomUUID().toString().replace("-","").toLowerCase();
+    }
 }

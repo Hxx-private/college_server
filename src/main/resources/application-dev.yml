@@ -7,7 +7,7 @@ spring:
     druid:
       filters: stat
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://127.0.0.1:3306/college_test?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://47.93.25.57/college_test?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai
       username: root
       password: 1234
       initial-size: 1
@@ -31,10 +31,10 @@ spring:
       max-request-size: 1024MB
 
   mvc:
-    #配置文件路径
-    static-path-pattern: /images/**
-  resources:
-    static-locations: file:E://zixue_test//pic/
+#    #配置文件路径
+#    static-path-pattern: /images/**
+#  resources:
+#    static-locations: file:E://college//pic/
 #mybatis相关配置
 mybatis:
   config-location:
@@ -59,7 +59,6 @@ swagger:
   enable: true
 
 # 自定义文件上传路径
-web.upload-path: E:/zixue_test/pic/
-
+web.upload-path: E:/college/pic/
 
 

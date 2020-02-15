@@ -72,8 +72,8 @@ public class SecurityService {
      * @Date 10:41 2019/12/17
      * @Param []
      **/
-    public List<Security> findApply() {
-        return securityDao.findApply();
+    public List<Security> findApply(Integer buildId,String roomId) {
+        return securityDao.findApply(buildId, roomId);
     }
 
     public int applyTotal() {
@@ -140,7 +140,10 @@ public class SecurityService {
         return securitys;
     }
 
-
+    public boolean deleteBatch(String ids) {
+        String[] split = ids.split(",");
+        return securityDao.deleteBatch(split) == split.length;
+    }
 }
 
 

@@ -31,4 +31,8 @@ public class SecurityHistoryService {
     public int total() {
         return historyDao.total();
     }
+
+    public List <Security> findCheck(Integer buildId, String roomId) {
+        return historyDao.findCheck(buildId,roomId);
+    }
 }

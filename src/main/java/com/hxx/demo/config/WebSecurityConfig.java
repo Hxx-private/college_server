@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/index.html", "/createUser", "/static/**", "/login_p", "/favicon.ico");
+        web.ignoring().antMatchers("/system/user/reg", "/user/createUser", "/login_p","/pic/*.png","/pic/*.jpeg","/pic/*.jpg");
     }
 
     @Override
@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .and()
                 .formLogin().loginPage("/login_p").loginProcessingUrl("/login")
-                .usernameParameter("userName").passwordParameter("password")
+                .usernameParameter("uName").passwordParameter("password")
                 .failureHandler((req, resp, e) -> {
                     resp.setContentType("application/json;charset=utf-8");
                     RespBean respBean;

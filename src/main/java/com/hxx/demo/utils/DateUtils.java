@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class DateUtils {
     public static String getSysTime(){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = dateFormat.format(new Date());
         return date;
     }

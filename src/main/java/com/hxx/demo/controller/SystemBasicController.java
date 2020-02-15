@@ -56,9 +56,9 @@ public class SystemBasicController {
     @RequestMapping(value = "/updateMenuRole", method = RequestMethod.PUT)
     public Result updateMenuRole(Long rid, Long[] mids) {
         if (menuRoleService.updateMenuRole(rid, mids) == mids.length) {
-            return Result.success("更新成功!");
+            return Result.success("更新成功");
         }
-        return Result.fail("更新失败!");
+        return Result.fail("更新失败");
     }
 
     @RequestMapping("/roles")
@@ -66,13 +66,4 @@ public class SystemBasicController {
         return roleService.roles();
     }
 
-    @RequestMapping("/findDepart")
-    public List<Depart> findAll() {
-        return departService.find();
-    }
-
-    @RequestMapping("/findSpecial")
-    public List<Special> findSpecial() {
-        return specialService.find();
-    }
 }

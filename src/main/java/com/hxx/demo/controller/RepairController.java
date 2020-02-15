@@ -10,7 +10,6 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,26 +37,11 @@ public class RepairController {
         Map<String, Object> map = new HashMap<>();
         String roomId = UserUtils.getCurrentUser().getRoomId();
         Integer buildId = UserUtils.getCurrentUser().getBuildId();
-        List<Repair> repairs = repairService.findAllRepair();
-        List<Repair> filterLists = new ArrayList<>();
-        int num = 0;
-        for (Repair repair : repairs) {
-            if (roomId.equals(repair.getRoomId()) && buildId == repair.getBuildId()) {
-                filterLists.add(repair);
-                num++;
-            }
-        }
+        int total = repairService.findApplyList(buildId, roomId).size();
         PageHelper.startPage(pageNum, pageSize);
-        List<Repair> list = repairService.findAllRepair();
-        List<Repair> filterList = new ArrayList<>();
-        for (Repair repair : list) {
-            if (roomId.equals(repair.getRoomId()) && buildId == repair.getBuildId()) {
-                filterList.add(repair);
-            }
-        }
-        if (filterList.size() > 0) {
-            int total = num;
-            map.put("data", filterList);
+        List<Repair> list = repairService.findApplyList(buildId, roomId);
+        if (list.size() > 0) {
+            map.put("data", list);
             map.put("total", total);
             return RespBean.ok("", map);
         }
@@ -80,6 +64,8 @@ public class RepairController {
         repair.setRoomId(UserUtils.getCurrentUser().getRoomId());
         repair.setApplicant(UserUtils.getCurrentUser().getName());
         repair.setStatus(0);
+        repair.setFlag(0);
+        repair.setResult(0);
         repair.setTime(DateUtils.getSysTime());
         int i = repairService.create(repair);
         if (i > 0) {
@@ -87,6 +73,25 @@ public class RepairController {
             return RespBean.ok("提交成功", repair);
         }
         return RespBean.error("提交失败");
+    }
+
+    /**
+     * @return com.hxx.demo.entity.Result
+     * @Author Hxx
+     * @Description //TODO 确认审核
+     * @Date 10:36 2019/11/1
+     * @Param []
+     **/
+    @PutMapping("handleAudting/{id}")
+    public RespBean handleAudting(@PathVariable String id) {
+        Repair repair = new Repair();
+        repair.setId(id);
+        repair.setFlag(1);
+        int i = repairService.handleAudting(repair);
+        if (i > 0) {
+            return RespBean.ok("审核完成", repair);
+        }
+        return RespBean.error("操作失败");
     }
 
     /**
@@ -109,7 +114,6 @@ public class RepairController {
         }
         return RespBean.error("操作失败");
     }
-
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
@@ -128,6 +132,24 @@ public class RepairController {
         return RespBean.ok("", map);
     }
 
+    /**
+     * @return java.util.Map<java.lang.String, java.lang.Object>
+     * @Author Hxx
+     * @Description //TODO 审核列表
+     * @Date 9:47 2019/10/30
+     * @Param []
+     **/
+    @GetMapping("findAudting/list")
+    public RespBean findAudting(Integer pageNum, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        int total = repairService.findAudting().size();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Repair> list = repairService.findAudting();
+        map.put("data", list);
+        map.put("total", total);
+        return RespBean.ok("", map);
+    }
+
 
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
@@ -139,9 +161,9 @@ public class RepairController {
     @GetMapping("history/record")
     public RespBean findByStatus(Integer pageNum, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
-        int total = repairService.findByStatus().size();
+        int total = repairService.findHistory().size();
         PageHelper.startPage(pageNum, pageSize);
-        List<Repair> list = repairService.findByStatus();
+        List<Repair> list = repairService.findHistory();
         map.put("data", list);
         map.put("total", total);
         return RespBean.ok("", map);
@@ -232,27 +254,11 @@ public class RepairController {
         Map<String, Object> map = new HashMap<>();
         String roomId = UserUtils.getCurrentUser().getRoomId();
         Integer buildId = UserUtils.getCurrentUser().getBuildId();
-        List<Repair> repairs = repairService.findByStatus();
-        List<Repair> filterLists = new ArrayList<>();
-        int num = 0;
-        for (Repair repair : repairs) {
-            if (roomId.equals(repair.getRoomId()) && buildId == repair.getBuildId()) {
-                PageHelper.startPage(pageNum, pageSize);
-                filterLists.add(repair);
-                num++;
-            }
-        }
-        PageHelper.startPage(pageNum, pageSize);
-        List<Repair> list = repairService.findByStatus();
-        List<Repair> filterList = new ArrayList<>();
-        for (Repair repair : list) {
-            if (roomId.equals(repair.getRoomId()) && buildId == repair.getBuildId()) {
-                filterList.add(repair);
-            }
-        }
-        if (filterLists.size() > 0) {
-            int total = num;
-            map.put("data", filterList);
+        int total = repairService.findByStatus(buildId, roomId).size();
+        PageHelper.startPage(pageNum,pageSize);
+        List<Repair> list = repairService.findByStatus(buildId, roomId);
+        if (list.size() > 0) {
+            map.put("data", list);
             map.put("total", total);
             return RespBean.ok("", map);
         }
@@ -264,7 +270,7 @@ public class RepairController {
     /**
      * @return com.hxx.demo.entity.RespBean
      * @Author Hxx
-     * @Description //TODO 批量删除维修记录
+     * @Description //TODO 批量删除
      * @Date 17:34 2019/12/13
      * @Param [ids]
      **/

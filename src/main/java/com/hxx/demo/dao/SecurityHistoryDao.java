@@ -13,7 +13,6 @@ public interface SecurityHistoryDao {
      * @Description //TODO 历史记录
      * @Date 9:32 2019/12/17
      * @Param [securityHistory]
-     *
      **/
 
     @Insert("INSERT INTO security_history(id,buildId,roomId,description,discover,discoverTime,operator,operateTime,checker,checkTime,status,flag,result) values(#{securityHistory.id},#{securityHistory.buildId},#{securityHistory.roomId},#{securityHistory.description},#{securityHistory.discover},#{securityHistory.discoverTime},#{securityHistory.operator},#{securityHistory.operateTime},#{securityHistory.checker},#{securityHistory.checkTime},#{securityHistory.status},#{securityHistory.flag},#{securityHistory.result})")
@@ -28,5 +27,6 @@ public interface SecurityHistoryDao {
     @Delete("DELETE  FROM security_history")
     int delete();
 
-
+    @Select("SELECT * FROM security_history where buildId= #{buildId} AND roomId= #{roomId}")
+    List<Security> findCheck(@Param("buildId") Integer buildId, @Param("roomId") String roomId);
 }

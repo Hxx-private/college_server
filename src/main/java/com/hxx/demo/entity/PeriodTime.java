@@ -9,6 +9,8 @@ import lombok.Data;
  */
 @Data
 public class PeriodTime {
+    private Integer pageNum;
+    private Integer pageSize;
     private String startTime;
     private String endTime;
 }

@@ -12,7 +12,7 @@ public class SpecialService {
     @Autowired
     private SpecialDao specialDao;
 
-    public List<Special> find() {
-        return specialDao.find();
+    public List<Special> find(Integer departId) {
+        return specialDao.find(departId);
     }
 }

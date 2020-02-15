@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 public class User implements UserDetails {
     private Long id;
-    private String userName;
+    private String uName;
     private String password;
     private String pwdNew;
     private boolean enabled;
@@ -36,7 +36,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userName;
+        return uName;
     }
 
     @Override

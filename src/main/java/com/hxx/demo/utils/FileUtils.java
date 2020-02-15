@@ -7,6 +7,7 @@ import java.io.IOException;
 
 /**
  * 文件上传工具包
+ * @author Hxx
  */
 public class FileUtils {
 
@@ -18,12 +19,6 @@ public class FileUtils {
      * @return
      */
     public static boolean upload(MultipartFile file, String realPath, String fileName){
-
-
-        // 生成新的文件名
-        //String realPath = path + "/" + FileNameUtils.getFileName(fileName);
-
-
         File targetFile = new File(realPath);
         System.out.println("filePath="+realPath);
         //获取父级文件夹

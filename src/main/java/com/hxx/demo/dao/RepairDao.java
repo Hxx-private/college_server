@@ -18,7 +18,7 @@ public interface RepairDao {
      * @Param [repair]
      **/
 
-    @Insert("INSERT INTO repair (id,buildId,roomId,description,applicant,status,time) VALUES (#{repair.id},#{repair.buildId},#{repair.roomId},#{repair.description},#{repair.applicant},#{repair.status},#{repair.time})")
+    @Insert("INSERT INTO repair (id,buildId,roomId,description,applicant,status,time,flag,result) VALUES (#{repair.id},#{repair.buildId},#{repair.roomId},#{repair.description},#{repair.applicant},#{repair.status},#{repair.time},#{repair.flag},#{repair.result})")
     int createRepairForm(@Param("repair") Repair repair);
 
     /**
@@ -39,8 +39,8 @@ public interface RepairDao {
      * @Date 15:10 2019/10/28
      * @Param [status]
      **/
-    @Select("SELECT * FROM repair WHERE status =1 ")
-    List<Repair> findByStatus();
+    @Select("SELECT * FROM repair WHERE buildId=#{buildId} AND roomId=#{roomId} AND status =1 ")
+    List<Repair> findByStatus(@Param("buildId") Integer buildId, @Param("roomId") String roomId);
 
     /**
      * @return
@@ -52,28 +52,6 @@ public interface RepairDao {
     @Select("SELECT * FROM repair WHERE status =0")
     List<Repair> findAllRepair();
 
-
-
-
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Lost>
-     * @Author Hxx
-     * @Description //TODO 根据报修人查询他所提交的报修信息
-     * @Date 10:39 2019/10/31
-     * @Param [applicant]
-     **/
-    @Select("SELECT  * FROM repair WHERE applicant=#{applicant}")
-    Repair getByApplicant(@Param("applicant") String applicant);
-
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Lost>
-     * @Author Hxx
-     * @Description //TODO 查询当天所有的报修信息
-     * @Date 10:40 2019/10/31
-     * @Param []
-     **/
-    @Select("SELECT * FROM repair WHERE to_days(time)=to_days(now())")
-    List<Repair> getTodayRepair();
 
     /**
      * @return void
@@ -96,22 +74,93 @@ public interface RepairDao {
     @Delete("DELETE  FROM repair WHERE status=1")
     int deleteRecord();
 
-
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Repair>
+     * @Author Hxx
+     * @Description //TODO 根据关键字查找报修信息
+     * @Date 12:44 2019/12/27
+     * @Param [sql]
+     **/
     @Select(" SELECT * FROM repair WHERE status=0 AND ${sql} ")
     List<Repair> findBykeywords(@Param("sql") String sql);
 
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 根据id删除报修信息
+     * @Date 12:53 2020/2/10
+     * @Param [id]
+     **/
     @Delete("DELETE  FROM repair WHERE id = #{id}")
     int deleteById(@Param("id") String id);
 
-    @Delete("<script>DELETE FROM repair WHERE id IN <foreach collection=\"ids\" separator=\",\" open=\"(\" close=\")\" item=\"id\">\n" +
-            "        #{id}\n" +
-            "    </foreach></script>")
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 批量删除报修信息
+     * @Date 12:44 2019/12/27
+     * @Param [ids]
+     **/
+    @Delete("<script>DELETE FROM repair WHERE id IN <foreach collection=\"ids\" separator=\",\" open=\"(\" close=\")\" item=\"id\"> #{id}</foreach></script>")
     int deleteBatch(@Param("ids") String[] ids);
 
-
-    @Update("UPDATE repair SET buildId=#{repair.buildId},roomId=#{repair.roomId},description=#{repair.description},time=#{repair.time} WHERE id=#{repair.id}")
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 编辑报修信息
+     * @Date 12:46 2019/12/27
+     * @Param [repair]
+     **/
+    @Update("UPDATE repair SET description=#{repair.description},time=#{repair.time} WHERE id=#{repair.id}")
     int update(@Param("repair") Repair repair);
 
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 数据总量
+     * @Date 12:53 2020/2/10
+     * @Param []
+     **/
     @Select("select count(1) from repair")
     int total();
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Repair>
+     * @Author Hxx
+     * @Description //TODO 申请报修列表
+     * @Date 18:37 2019/12/21
+     * @Param []
+     **/
+    @Select("SELECT * FROM repair WHERE buildId=#{buildId} and roomId=#{roomId}")
+    List<Repair> findApplyList(@Param("buildId") Integer buildId, @Param("roomId") String roomId);
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Repair>
+     * @Author Hxx
+     * @Description //TODO 历史记录
+     * @Date 19:40 2019/12/21
+     * @Param []
+     **/
+    @Select("SELECT * FROM repair WHERE  status =1 ")
+    List<Repair> findHistory();
+
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Repair>
+     * @Author Hxx
+     * @Description //TODO 审核列表
+     * @Date 11:51 2020/2/10
+     * @Param []
+     **/
+    @Select("SELECT * FROM repair WHERE flag =0")
+    List<Repair> findAudting();
+
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 确认审核
+     * @Date 14:50 2020/2/10
+     * @Param [repair]
+     **/
+    @Update("UPDATE repair SET flag=#{repair.flag} WHERE id=#{repair.id}")
+    int handleAudting(@Param("repair")Repair repair);
 }

@@ -8,12 +8,10 @@ import com.hxx.demo.utils.IdUtils;
 import com.hxx.demo.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +53,7 @@ public class SanitaryController {
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
      * @Author Hxx
-     * @Description //TODO 显示所有检查信息
+     * @Description //TODO 卫生检查历史记录
      * @Date 13:33 2019/11/2
      * @Param []
      **/
@@ -111,30 +109,13 @@ public class SanitaryController {
     @GetMapping("dor/check/list")
     public RespBean findList(Integer pageNum, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
-
-        List<Sanitary> sanitarys = sanitaryService.selectAllSanitary();
-        List<Sanitary> filterList = new ArrayList<>();
-        int num=0;
-        for (Sanitary sanitary : sanitarys) {
-            if (UserUtils.getCurrentUser().getRoomId().equals(sanitary.getRoomId()) && UserUtils.getCurrentUser().getBuildId().equals(sanitary.getBuildId())) {
-                PageHelper.startPage(pageNum, pageSize);
-                filterList.add(sanitary);
-                num++;
-            }
-        }
+        String roomId = UserUtils.getCurrentUser().getRoomId();
+        Integer buildId = UserUtils.getCurrentUser().getBuildId();
+        int total = sanitaryService.findCheckList(buildId,roomId).size();
         PageHelper.startPage(pageNum,pageSize);
-        List<Sanitary> list = sanitaryService.selectAllSanitary();
-        List<Sanitary> filterLists = new ArrayList<>();
-        for (Sanitary sanitary : list) {
-            if (UserUtils.getCurrentUser().getRoomId().equals(sanitary.getRoomId()) && UserUtils.getCurrentUser().getBuildId().equals(sanitary.getBuildId())) {
-                PageHelper.startPage(pageNum, pageSize);
-                filterLists.add(sanitary);
-            }
-        }
-
-        if (filterLists.size() > 0) {
-            int total = filterLists.size();
-            map.put("data", filterLists);
+        List<Sanitary> list = sanitaryService.findCheckList(buildId,roomId);
+        if (list.size() > 0) {
+            map.put("data", list);
             map.put("total", total);
             return RespBean.ok("", map);
         }
@@ -163,5 +144,20 @@ public class SanitaryController {
         httpEntity.setData(grid);
         httpEntity.setStatus(200);
         return httpEntity;
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 批量删除
+     * @Date 16:06 2019/12/27
+     * @Param [ids]
+     **/
+    @DeleteMapping("deleteBatch/{ids}")
+    public RespBean deleteBatch(@PathVariable String ids) {
+        if (sanitaryService.deleteBatch(ids)) {
+            return RespBean.ok("删除成功!");
+        }
+        return RespBean.error("删除失败!");
     }
 }

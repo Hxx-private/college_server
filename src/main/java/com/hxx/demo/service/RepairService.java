@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Hxx
@@ -30,6 +31,17 @@ public class RepairService {
         return repairDao.createRepairForm(repair);
     }
 
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Repair>
+     * @Author Hxx
+     * @Description //TODO 申请报修列表
+     * @Date 18:37 2019/12/21
+     * @Param []
+     **/
+    public List<Repair> findApplyList(Integer buildId,String roomId) {
+        return repairDao.findApplyList(buildId,roomId);
+    }
+
 
     /**
      * @return com.hxx.demo.entity.User
@@ -38,8 +50,8 @@ public class RepairService {
      * @Date 17:05 2019/10/28
      * @Param [status]
      **/
-    public List<Repair> findByStatus() {
-        return repairDao.findByStatus();
+    public List<Repair> findByStatus(Integer buildId,String roomId) {
+        return repairDao.findByStatus(buildId,roomId);
     }
 
     /**
@@ -66,27 +78,8 @@ public class RepairService {
     }
 
 
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Lost>
-     * @Author Hxx
-     * @Description //TODO 根据报修人查询报修信息
-     * @Date 10:42 2019/10/31
-     * @Param [applicant]
-     **/
-    public Repair getByApplicant(String applicant) {
-        return repairDao.getByApplicant(applicant);
-    }
 
-    /**
-     * @return java.util.List<com.hxx.demo.entity.Lost>
-     * @Author Hxx
-     * @Description //TODO 查询当天所有的报修信息
-     * @Date 10:43 2019/10/31
-     * @Param []
-     **/
-    public List<Repair> getTodayRepair() {
-        return repairDao.getTodayRepair();
-    }
+
 
     /**
      * @return void
@@ -131,7 +124,7 @@ public class RepairService {
     /**
      * @return boolean
      * @Author Hxx
-     * @Description //TODO 批量删除维修记录
+     * @Description //TODO 批量删除报修信息
      * @Date 17:31 2019/12/13
      * @Param [ids]
      **/
@@ -147,5 +140,17 @@ public class RepairService {
 
     public int total() {
         return repairDao.total();
+    }
+
+    public List<Repair> findHistory() {
+        return repairDao.findHistory();
+    }
+
+    public List<Repair> findAudting() {
+        return repairDao.findAudting();
+    }
+
+    public int handleAudting(Repair repair) {
+        return repairDao.handleAudting(repair);
     }
 }

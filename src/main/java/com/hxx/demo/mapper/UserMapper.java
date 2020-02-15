@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 public interface UserMapper  {
-    User loadUserByUsername(@Param("userName") String userName);
+    User loadUserByUsername(@Param("uName") String uName);
 
     List<Role> getRolesByUserId(Long id);
 

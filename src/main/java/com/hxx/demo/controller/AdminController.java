@@ -28,18 +28,19 @@ public class AdminController {
     Map<String, Object> map = new HashMap<>();
     @Autowired
     private UserService userService;
+
     /**
+     * @return
      * @Author Hxx
      * @Description //TODO 根据指定字段查询用户
      * @Date 11:53 2019/12/2
      * @Param
-     * @return
      **/
     @PostMapping(value = "findByKeyWords", consumes = "application/json;charset=UTF-8")
     public HttpEntity findByKeyWords(@RequestBody GridRequest gridJson) {
         HttpEntity httpEntity = new HttpEntity();
         Grid grid = new Grid();
-        PageHelper.startPage(gridJson.getPageNum(),gridJson.getPageSize());
+        PageHelper.startPage(gridJson.getPageNum(), gridJson.getPageSize());
         List<User> list = this.userService.getGrid(gridJson);
         int total = list.size();
         grid.setData(list);
@@ -84,7 +85,7 @@ public class AdminController {
         user.setPassword(new BCryptPasswordEncoder().encode("1234").trim());
         user.setRegisterTime(DateUtils.getSysTime());
         user.setEnabled(true);
-        if (userService.loadUserByUsername(user.getUsername()) != null) {
+        if (null != userService.findByUName(user.getUsername())) {
             return RespBean.error("用户名已经存在,请重新输入");
         }
         int i = userService.createUser(user);
@@ -97,15 +98,13 @@ public class AdminController {
     /**
      * @return com.hxx.demo.entity.Result
      * @Author Hxx
-     * @Description //TODO 根据userName删除用户
+     * @Description //TODO 根据uName删除用户
      * @Date 15:29 2019/11/7
-     * @Param [userName]
+     * @Param [uName]
      **/
-    @ApiOperation(value = "根据userName删除用户")
-    @ApiImplicitParam(name = "userName", value = "userName", required = true, dataType = "String")
-    @GetMapping("/delByUserName")
-    public RespBean delByuserName(String userName) {
-        int i = userService.delByUserName(userName);
+    @DeleteMapping("/delByUserName/{uname}")
+    public RespBean delByUserName(@PathVariable String uname) {
+        int i = userService.delByUserName(uname);
         if (i > 0) {
             return RespBean.ok("删除成功");
         }
@@ -115,11 +114,29 @@ public class AdminController {
 
     @PostMapping("/updateUser")
     public RespBean updateUser(@RequestBody User user) {
-        if (userService.updateUser(user) == 1) {
-            return RespBean.ok("更新成功!");
+        if (null != userService.findindByUserNameNotSelf(user.getUsername(), user.getId())) {
+            return RespBean.error("用户名已存在");
         }
-        return RespBean.error("更新失败!");
+        int i = userService.updateSelf(user);
+        if (i > 0) {
+            return RespBean.ok("保存成功!");
+        }
+        return RespBean.error("保存失败!");
     }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 详情
+     * @Date 20:27 2019/12/21
+     * @Param [id]
+     **/
+    @GetMapping("/findById/{id}")
+    public RespBean findById(@PathVariable Integer id) {
+        User user = userService.findById(id);
+        return RespBean.ok("", user);
+    }
+
 
     /**
      * @return org.springframework.http.ResponseEntity<byte [ ]>
@@ -128,8 +145,23 @@ public class AdminController {
      * @Date 10:46 2019/12/12
      * @Param []
      **/
-    @GetMapping(value = "/exportUser")
-    public ResponseEntity<byte[]> exportEmp() {
+    @GetMapping(value = "/export")
+    public ResponseEntity<byte[]> exportUser() {
         return PoiUtils.exportUserExcel(userService.findAll());
+    }
+
+    /**
+     * @return com.hxx.demo.entity.RespBean
+     * @Author Hxx
+     * @Description //TODO 批量删除
+     * @Date 15:58 2019/12/27
+     * @Param [ids]
+     **/
+    @DeleteMapping("/deleteBatchd/{ids}")
+    public RespBean deleteBatch(@PathVariable String ids) {
+        if (userService.deleteBatch(ids)) {
+            return RespBean.ok("删除成功");
+        }
+        return RespBean.error("删除失败");
     }
 }

@@ -76,8 +76,8 @@ public interface SecurityDao {
      * @Date 11:38 2019/12/18
      * @Param []
      **/
-    @Select("SELECT * FROM security WHERE result <> 2")
-    List<Security> findApply();
+    @Select("SELECT * FROM security WHERE buildId=#{buildId} AND roomId=#{roomId} AND result <> 2")
+    List<Security> findApply(@Param("buildId") Integer buildId, @Param("roomId") String roomId);
 
     @Select("SELECT COUNT(1) FROM security WHERE result <> 2")
     int applyTotal();
@@ -125,4 +125,13 @@ public interface SecurityDao {
     @Select("SELECT COUNT(1) FROM security")
     int total();
 
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 批量删除
+     * @Date 16:01 2019/12/27
+     * @Param [ids]
+     **/
+    @Delete("<script>DELETE FROM security WHERE id IN <foreach collection=\"ids\" separator=\",\" open=\"(\" close=\")\" item=\"id\"> #{id}</foreach></script>")
+    int deleteBatch(@Param("ids") String[] ids);
 }

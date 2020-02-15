@@ -8,6 +8,8 @@ import java.util.Date;
  */
 @Data
 public class Room {
+    private long id;
+
     private String roomId;
     //床位数
     public  Integer num;
@@ -18,6 +20,6 @@ public class Room {
 
     private Integer bNum;
 
-    private Date createTime;
+    private String createTime;
 
 }

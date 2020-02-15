@@ -1,6 +1,7 @@
 package com.hxx.demo.controller;
 
 
+import com.hxx.demo.dao.UserDao;
 import com.hxx.demo.entity.RespBean;
 import com.hxx.demo.entity.Role;
 import com.hxx.demo.entity.User;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,13 +33,11 @@ public class UserController {
     /**
      * @return com.hxx.demo.entity.Result
      * @Author Hxx
-     * @Description //TODO 个人信息
+     * @Description //TODO 个人中心
      * @Date 10:12 2019/10/31
-     * @Param [userName]
+     * @Param [uName]
      **/
-    @ApiOperation(value = "个人中心", notes = "显示信息如下")
     @GetMapping(value = "/show")
-    @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String")
     public User showSelfInfo() {
         return UserUtils.getCurrentUser();
     }
@@ -49,9 +49,9 @@ public class UserController {
      * @Date 16:49 2019/10/30
      * @Param [user]
      **/
-    @PutMapping(value = "/alter")
+    @PostMapping(value = "/alter")
     public RespBean alterUser(@RequestBody User user) {
-        if (null!=userService.findByUserName(user.getUsername(),user.getId())){
+        if (null != userService.findByUserName(user.getUsername(), user.getId())) {
             int i = userService.alterUser(user);
             if (i > 0) {
                 return RespBean.ok("修改成功");
@@ -59,7 +59,7 @@ public class UserController {
             return RespBean.error("修改失败");
         }
 
-       return RespBean.error("用户名存在");
+        return RespBean.error("用户名存在");
     }
 
     /**
@@ -69,11 +69,12 @@ public class UserController {
      * @Date 14:13 2019/11/19
      * @Param [username, password]
      **/
-    @ApiOperation("用户注册")
     @PostMapping(value = "/reg")
-    public RespBean userReg(String userName, String password) {
-        int i = userService.userReg(userName, password);
-        if (i == 1) {
+    public RespBean userReg(String uName, String password) {
+        int i = userService.userReg(uName, password);
+        long id = userService.findByUName(uName).getId();
+        int j = userService.Reg(id);
+        if (i == 1 && j == 1) {
             return RespBean.ok("注册成功!");
         } else if (i == -1) {
             return RespBean.error("用户名重复，注册失败!");
@@ -108,6 +109,7 @@ public class UserController {
 
     @PutMapping(value = "/")
     public RespBean updateUser(User user) {
+
         if (userService.updateUser(user) == 1) {
             return RespBean.ok("更新成功!");
         }
@@ -122,4 +124,20 @@ public class UserController {
         return RespBean.error("更新失败!");
     }
 
+    @PostMapping("/changePwd")
+    public RespBean changePassword(User user) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String password = encoder.encode(user.getPassword());
+        if (password.equals(userService.findByUName(user.getUsername()).getPassword())) {
+            BCryptPasswordEncoder encoders = new BCryptPasswordEncoder();
+            String pwd = encoders.encode(user.getPwdNew());
+            User user1 = new User();
+            user1.setPwdNew(pwd);
+            user1.setUName(user.getUsername());
+            userService.changePwd(user1);
+        } else {
+            return RespBean.error("旧密码错误,请重新输入");
+        }
+       return RespBean.ok("密码修改成功");
+    }
 }

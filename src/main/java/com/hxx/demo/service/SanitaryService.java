@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Martin
@@ -99,16 +100,6 @@ public class SanitaryService {
         return sanitaryDao.delBySaroomId(roomId);
     }
 
-    /**
-     * @return void
-     * @Author Hxx
-     * @Description //TODO 根据检查时间删除宿舍卫生信息
-     * @Date 15:03 2019/11/7
-     * @Param [user]
-     **/
-    public void delBycheckTime(String checkTime) {
-        sanitaryDao.delBycheckTime(checkTime);
-    }
 
 
     public int update(Sanitary sanitary) {
@@ -131,5 +122,14 @@ public class SanitaryService {
         String sql = paramsInitUtils.initParams(gridJson, "sanitary");
         List<Sanitary> users = this.sanitaryDao.findBykeywords(sql);
         return users;
+    }
+
+    public List<Sanitary> findCheckList(Integer buildId, String roomId) {
+        return sanitaryDao.findCheckList(buildId,roomId);
+    }
+
+    public boolean deleteBatch(String ids) {
+        String[] split = ids.split(",");
+        return sanitaryDao.deleteBatch(split) == split.length;
     }
 }

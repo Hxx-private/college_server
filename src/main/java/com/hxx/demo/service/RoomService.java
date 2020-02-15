@@ -79,8 +79,16 @@ public class RoomService {
      * @Date 15:48 2019/12/11
      * @Param [room]
      **/
-    public int updateRoom(Room room) {
-        return roomDao.updateRoom(room);
+    public int editRoom(Room room) {
+        return roomDao.editRoom(room);
+    }
+
+    public int editRoomInfo(Room room) {
+        return roomDao.editRoomInfo(room);
+    }
+
+    public Room findInfo(Integer buildId, String roomId) {
+        return roomDao.findInfo(buildId, roomId);
     }
 
     /**
@@ -101,5 +109,45 @@ public class RoomService {
         return roomDao.total();
     }
 
+    /**
+     * @return java.util.List<com.hxx.demo.entity.Room>
+     * @Author Hxx
+     * @Description //TODO  下拉菜单
+     * @Date 14:02 2019/12/23
+     * @Param []
+     **/
+    public List<Room> getRoom() {
+        return roomDao.find();
+    }
 
+    public List<Build> getBuild() {
+        return buildDao.getBuild();
+    }
+
+    /**
+     * @return int
+     * @Author Hxx
+     * @Description //TODO 批量删除
+     * @Date 15:50 2019/12/27
+     * @Param [ids]
+     **/
+    public boolean deleteBatch(String ids) {
+        String[] split = ids.split(",");
+        return roomDao.deleteBatchInfo(split) == split.length;
+    }
+
+    /**
+     * @return com.hxx.demo.entity.Room
+     * @Author Hxx
+     * @Description //TODO 根据roomId查找宿舍信息
+     * @Date 15:20 2019/12/28
+     * @Param [roomId]
+     **/
+    public Room findByRoomId(String roomId) {
+        return roomDao.findByRoomId(roomId);
+    }
+
+    public Build findByBuildid(Integer buildId) {
+       return buildDao.findByBuildId(buildId);
+    }
 }

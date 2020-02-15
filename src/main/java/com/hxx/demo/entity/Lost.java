@@ -11,5 +11,6 @@ public class Lost {
     private String content;
     private String creater;
     private String createTime;
+    private String imgUrl;
 
 }
